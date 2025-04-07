@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './AuthStyles.css';
 
-const Login = ({ onLoginSuccess }) => {
+const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -19,47 +23,72 @@ const Login = ({ onLoginSuccess }) => {
       ...formData,
       [name]: value
     });
+    
+    // Kullanıcı yazmaya başladığında ilgili hata mesajını temizle
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Email doğrulama
+    if (!formData.email) {
+      newErrors.email = 'Email adresi gereklidir';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Geçerli bir email adresi giriniz';
+    }
+    
+    // Şifre doğrulama
+    if (!formData.password) {
+      newErrors.password = 'Şifre gereklidir';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Şifre en az 6 karakter olmalıdır';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      // Email doğrulama
-      if (!formData.email.includes('@')) {
-        throw new Error('Geçerli bir email adresi giriniz');
-      }
-
-      // Şifre doğrulama
-      if (formData.password.length < 6) {
-        throw new Error('Şifre en az 6 karakter olmalıdır');
-      }
-
-      // Simüle edilmiş giriş işlemi
-      setTimeout(() => {
-        setLoading(false);
-        // Başarılı giriş simülasyonu
-        if (formData.email === "test@example.com" && formData.password === "123456") {
-          const user = {
-            id: "1",
-            firstName: "Test",
-            lastName: "Kullanıcı",
-            email: formData.email
-          };
-          onLoginSuccess(user);
+    
+    if (validateForm()) {
+      setLoading(true);
+      setLoginError('');
+      
+      try {
+        // AuthContext'teki login fonksiyonunu kullan
+        const result = await login(formData.email, formData.password);
+        
+        if (result.success) {
+          // Eğer "Beni hatırla" seçeneği işaretlenmişse, token'ı localStorage'da sakla
+          // Aksi takdirde sessionStorage'da sakla (bu işlem AuthContext içinde yapılabilir)
+          if (rememberMe) {
+            // Bu işlem AuthContext içinde yapılabilir
+            localStorage.setItem('rememberMe', 'true');
+          } else {
+            localStorage.setItem('rememberMe', 'false');
+          }
+          
+          navigate('/dashboard');
         } else {
-          setError('Email veya şifre hatalı');
+          setLoginError(result.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
         }
-      }, 1000);
-    } catch (err) {
-      setLoading(false);
-      setError(err.message || 'Giriş sırasında bir hata oluştu');
+      } catch (error) {
+        setLoginError('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+        console.error('Login error:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -67,7 +96,8 @@ const Login = ({ onLoginSuccess }) => {
     <div className="auth-container">
       <div className="auth-card">
         <h2>Giriş Yap</h2>
-        {error && <div className="error-message">{error}</div>}
+        
+        {loginError && <div className="error-message">{loginError}</div>}
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -79,8 +109,9 @@ const Login = ({ onLoginSuccess }) => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Email adresinizi giriniz"
-              required
+              className={errors.email ? "invalid" : ""}
             />
+            {errors.email && <div className="field-error">{errors.email}</div>}
           </div>
           
           <div className="form-group">
@@ -92,14 +123,15 @@ const Login = ({ onLoginSuccess }) => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Şifrenizi giriniz"
-              required
+              className={errors.password ? "invalid" : ""}
             />
             <span 
-              className="password-toggle" 
+              className="password-toggle"
               onClick={togglePasswordVisibility}
             >
-              <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+              {/* Göz ikonu */}
             </span>
+            {errors.password && <div className="field-error">{errors.password}</div>}
           </div>
           
           <div className="remember-forgot">
@@ -114,17 +146,21 @@ const Login = ({ onLoginSuccess }) => {
             </div>
             
             <div className="forgot-password">
-              <a href="#forgot">Şifremi unuttum</a>
+              <Link to="/forgot-password">Şifremi unuttum</Link>
             </div>
           </div>
           
-          <button type="submit" className="auth-button" disabled={loading}>
+          <button 
+            type="submit"
+            className={`auth-button ${loading ? 'submitting' : ''}`}
+            disabled={loading}
+          >
             {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
           </button>
         </form>
         
         <div className="auth-switch">
-          Hesabınız yok mu? <button onClick={() => navigate('/register')}>Kayıt Ol</button>
+          Hesabınız yok mu? <Link to="/register">Kayıt Ol</Link>
         </div>
       </div>
     </div>
