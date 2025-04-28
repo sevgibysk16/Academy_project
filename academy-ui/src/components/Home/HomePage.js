@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; // 🔥 Eklendi
 import './HomePage.css';
 import heroImage from '../../assets/hero-image.jpg';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  
+  const { currentUser } = useAuth(); // 🔥 Eklendi
+
   const navigateToLogin = () => {
     navigate('/login');
   };
@@ -23,10 +25,14 @@ const HomePage = () => {
             <h1 className="hero-title">Intellica</h1>
             <p className="hero-subtitle">Bilgiyi paylaş, topluluğa katıl, geleceğe yön ver!</p>
             <p className="hero-welcome">Hoş geldin! Akademik dünyaya bir adım daha yaklaş!</p>
-            <div className="hero-buttons">
-              <button className="primary-button" onClick={navigateToRegister}>Kayıt Ol</button>
-              <button className="secondary-button" onClick={navigateToLogin}>Giriş Yap</button>
-            </div>
+
+            {/* 🔥 Eğer kullanıcı giriş yapmadıysa butonları göster */}
+            {!currentUser && (
+              <div className="hero-buttons">
+                <button className="primary-button" onClick={navigateToRegister}>Kayıt Ol</button>
+                <button className="secondary-button" onClick={navigateToLogin}>Giriş Yap</button>
+              </div>
+            )}
           </div>
           <div className="hero-image">
             <img src={heroImage} alt="Hero" className="hero-img" />
@@ -119,7 +125,10 @@ const HomePage = () => {
           <div className="cta-content">
             <h2>Intellica'ya Bugün Katılın</h2>
             <p>Bilgi paylaşımını ve akademik işbirliğini kolaylaştıran platformumuzda yerinizi alın.</p>
-            <button className="cta-button" onClick={navigateToRegister}>Hemen Kaydol</button>
+            {/* 🔥 Burada da sadece giriş yapmamışsa "Hemen Kaydol" butonu gösterilebilir */}
+            {!currentUser && (
+              <button className="cta-button" onClick={navigateToRegister}>Hemen Kaydol</button>
+            )}
           </div>
         </div>
       </section>

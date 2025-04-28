@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';  // Firebase AuthContext hook'u
 import './AuthStyles.css';
 
 const Register = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register } = useAuth();  // Firebase authService'den register fonksiyonunu kullanıyoruz
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -96,12 +96,10 @@ const Register = () => {
       setRegisterError('');
       
       try {
-        // AuthContext'teki register fonksiyonunu kullan
-        const result = await register({
+        // Firebase Authentication register fonksiyonunu kullan
+        const result = await register(formData.email, formData.password, {
           firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          password: formData.password
+          lastName: formData.lastName
         });
         
         if (result.success) {
@@ -137,6 +135,7 @@ const Register = () => {
                 onChange={handleChange}
                 placeholder="Adınızı giriniz"
                 className={errors.firstName ? "invalid" : ""}
+                required
               />
               {errors.firstName && <div className="field-error">{errors.firstName}</div>}
             </div>
@@ -151,6 +150,7 @@ const Register = () => {
                 onChange={handleChange}
                 placeholder="Soyadınızı giriniz"
                 className={errors.lastName ? "invalid" : ""}
+                required
               />
               {errors.lastName && <div className="field-error">{errors.lastName}</div>}
             </div>
@@ -166,47 +166,53 @@ const Register = () => {
               onChange={handleChange}
               placeholder="Email adresinizi giriniz"
               className={errors.email ? "invalid" : ""}
+              required
             />
             {errors.email && <div className="field-error">{errors.email}</div>}
           </div>
           
           <div className="form-group">
             <label htmlFor="password">Şifre</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Şifrenizi giriniz"
-              className={errors.password ? "invalid" : ""}
-            />
-            <span 
-              className="password-toggle"
-              onClick={togglePasswordVisibility}
-            >
-              {/* Göz ikonu */}
-            </span>
+            <div className="password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Şifrenizi giriniz"
+                className={errors.password ? "invalid" : ""}
+                required
+              />
+              <span 
+                className="password-toggle"
+                onClick={togglePasswordVisibility}
+              >
+              </span>
+            </div>
             {errors.password && <div className="field-error">{errors.password}</div>}
           </div>
           
           <div className="form-group">
             <label htmlFor="confirmPassword">Şifre Tekrar</label>
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Şifrenizi tekrar giriniz"
-              className={errors.confirmPassword ? "invalid" : ""}
-            />
-            <span 
-              className="password-toggle"
-              onClick={toggleConfirmPasswordVisibility}
-            >
-              {/* Göz ikonu */}
-            </span>
+            <div className="password-input-container">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Şifrenizi tekrar giriniz"
+                className={errors.confirmPassword ? "invalid" : ""}
+                required
+              />
+              <span 
+                className="password-toggle"
+                onClick={toggleConfirmPasswordVisibility}
+              >
+               
+              </span>
+            </div>
             {errors.confirmPassword && <div className="field-error">{errors.confirmPassword}</div>}
           </div>
           
@@ -219,7 +225,7 @@ const Register = () => {
               className={errors.agreeTerms ? "invalid" : ""}
             />
             <label htmlFor="agreeTerms">
-              <Link to="/terms" onClick={(e) => e.preventDefault()}>Kullanım şartlarını</Link> ve <Link to="/privacy" onClick={(e) => e.preventDefault()}>Gizlilik Politikasını</Link> kabul ediyorum
+              <Link to="/terms" onClick={(e) => e.stopPropagation()}>Kullanım şartlarını</Link> ve <Link to="/privacy" onClick={(e) => e.stopPropagation()}>Gizlilik Politikasını</Link> kabul ediyorum
             </label>
             {errors.agreeTerms && <div className="field-error">{errors.agreeTerms}</div>}
           </div>

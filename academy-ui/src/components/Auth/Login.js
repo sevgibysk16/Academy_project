@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';  // Firebase Authentication hook'u
 import './AuthStyles.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login } = useAuth();  // Firebase login fonksiyonunu kullanmak için
   
   const [formData, setFormData] = useState({
     email: '',
@@ -66,20 +66,18 @@ const Login = () => {
       setLoginError('');
       
       try {
-        // AuthContext'teki login fonksiyonunu kullan
+        // Firebase login fonksiyonunu kullan
         const result = await login(formData.email, formData.password);
         
         if (result.success) {
           // Eğer "Beni hatırla" seçeneği işaretlenmişse, token'ı localStorage'da sakla
-          // Aksi takdirde sessionStorage'da sakla (bu işlem AuthContext içinde yapılabilir)
           if (rememberMe) {
-            // Bu işlem AuthContext içinde yapılabilir
             localStorage.setItem('rememberMe', 'true');
           } else {
             localStorage.setItem('rememberMe', 'false');
           }
           
-          navigate('/dashboard');
+          navigate('/dashboard');  // Başarıyla giriş yapıldığında yönlendir
         } else {
           setLoginError(result.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
         }
@@ -110,27 +108,30 @@ const Login = () => {
               onChange={handleChange}
               placeholder="Email adresinizi giriniz"
               className={errors.email ? "invalid" : ""}
+              required
             />
             {errors.email && <div className="field-error">{errors.email}</div>}
           </div>
           
           <div className="form-group">
             <label htmlFor="password">Şifre</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Şifrenizi giriniz"
-              className={errors.password ? "invalid" : ""}
-            />
-            <span 
-              className="password-toggle"
-              onClick={togglePasswordVisibility}
-            >
-              {/* Göz ikonu */}
-            </span>
+            <div className="password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Şifrenizi giriniz"
+                className={errors.password ? "invalid" : ""}
+                required
+              />
+              <span 
+                className="password-toggle"
+                onClick={togglePasswordVisibility}
+              >
+              </span>
+            </div>
             {errors.password && <div className="field-error">{errors.password}</div>}
           </div>
           

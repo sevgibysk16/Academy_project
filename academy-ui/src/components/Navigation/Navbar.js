@@ -15,25 +15,17 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const navbarRef = useRef(null);
 
-  // Handle scrolling effect for navbar
+  // Navbar scroll efekti
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 50);
     };
-
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
-    // Prevent body scrolling when mobile menu is open
     document.body.style.overflow = !mobileMenuOpen ? 'hidden' : 'auto';
   };
 
@@ -53,27 +45,21 @@ const Navbar = () => {
     }
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
     document.body.style.overflow = 'auto';
   }, [location.pathname]);
 
-  // Handle escape key to close menus
   useEffect(() => {
     const handleEscKey = (event) => {
       if (event.key === 'Escape') {
@@ -82,14 +68,10 @@ const Navbar = () => {
         document.body.style.overflow = 'auto';
       }
     };
-
     document.addEventListener('keydown', handleEscKey);
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-    };
+    return () => document.removeEventListener('keydown', handleEscKey);
   }, []);
 
-  // Get user initial and name
   const getUserInitial = () => {
     if (currentUser?.firstName) {
       return currentUser.firstName.charAt(0);
@@ -108,7 +90,6 @@ const Navbar = () => {
     return 'Kullanıcı';
   };
 
-  // Navigation items for DRY code
   const navItems = [
     { path: '/', label: 'Ana Sayfa', icon: 'fa-home' },
     { path: '/community', label: 'Topluluk', icon: 'fa-users' },
@@ -169,17 +150,11 @@ const Navbar = () => {
                   </span>
                   <i className={`fas fa-chevron-${dropdownOpen ? 'up' : 'down'}`}></i>
                 </button>
-                
+
                 {dropdownOpen && (
                   <div className="dropdown-content" role="menu">
                     <Link to="/dashboard" onClick={() => setDropdownOpen(false)} role="menuitem">
-                      <i className="fas fa-tachometer-alt"></i> Dashboard
-                    </Link>
-                    <Link to="/profile" onClick={() => setDropdownOpen(false)} role="menuitem">
                       <i className="fas fa-user"></i> Profilim
-                    </Link>
-                    <Link to="/settings" onClick={() => setDropdownOpen(false)} role="menuitem">
-                      <i className="fas fa-cog"></i> Ayarlar
                     </Link>
                     <div className="dropdown-divider"></div>
                     <button onClick={handleLogout} role="menuitem">
