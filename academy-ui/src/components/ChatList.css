@@ -1,0 +1,155 @@
+.chat-list {
+  width: 280px;
+  border-right: 1px solid #e0e0e0;
+  padding: 15px;
+  background: #f8f9fa;
+  box-shadow: inset -2px 0 5px rgba(0, 0, 0, 0.02);
+  overflow-y: auto;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.chat-list h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #333;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e6e6e6;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.chat-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.chat-list li {
+  padding: 12px 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  position: relative;
+  color: #555;
+  font-size: 14px;
+}
+
+.chat-list li:hover {
+  background-color: #eef2f7;
+  transform: translateX(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.chat-list li.selected {
+  background-color: #e1f0ff;
+  color: #0366d6;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(3, 102, 214, 0.1);
+}
+
+.chat-list li.selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: #0366d6;
+  border-radius: 4px 0 0 4px;
+}
+
+/* Arama kutusu için stil */
+.search-container {
+  margin-bottom: 15px;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 14px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.search-container input:focus {
+  outline: none;
+  border-color: #0366d6;
+  box-shadow: 0 1px 5px rgba(3, 102, 214, 0.15);
+}
+
+.search-container input::placeholder {
+  color: #aaa;
+}
+
+/* Kullanıcı avatar stili (opsiyonel) */
+.chat-list li .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background-color: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Okunmamış mesaj göstergesi (opsiyonel) */
+.chat-list li .unread-badge {
+  width: 8px;
+  height: 8px;
+  background-color: #0366d6;
+  border-radius: 50%;
+  margin-left: auto;
+}
+
+/* Boş durum stili */
+.chat-list .empty-list {
+  color: #999;
+  text-align: center;
+  padding: 20px 0;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Responsive tasarım için */
+@media (max-width: 768px) {
+  .chat-list {
+    width: 220px;
+    padding: 10px;
+  }
+  
+  .chat-list li {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .search-container input {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .chat-list {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    max-height: 200px;
+  }
+  
+  .search-container {
+    margin-bottom: 10px;
+  }
+}

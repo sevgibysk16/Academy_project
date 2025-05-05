@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getFirestore, doc, setDoc, collection, query, where, getDocs, getDoc } from 'firebase/firestore';
 import './CommunityStyles.css';
@@ -12,6 +13,7 @@ const CommunityPage = () => {
   const [lastName, setLastName] = useState('');
 
   const db = getFirestore();
+  const navigate = useNavigate();
 
   const community = {
     _id: '1',
@@ -41,7 +43,7 @@ const CommunityPage = () => {
         first_name: firstName,
         last_name: lastName,
         community_member: true,
-      }, { merge: true }); // merge:true => var olan verileri silmeden günceller
+      }, { merge: true });
 
       alert('Topluluğa başarıyla katıldınız!');
       setIsMember(true);
@@ -135,6 +137,17 @@ const CommunityPage = () => {
                 </form>
               )}
             </>
+          )}
+
+          {isMember && (
+            <div style={{ marginTop: '20px' }}>
+              <button
+                className="join-button"
+                onClick={() => navigate('/chat')}
+              >
+                Mesajlaşmaya Başla
+              </button>
+            </div>
           )}
 
           {members.length > 0 && (
