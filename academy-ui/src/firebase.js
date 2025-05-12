@@ -3,20 +3,22 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAnalytics } from "firebase/analytics";
 
-// Firebase yapılandırma bilgileri
+// Yeni Firebase yapılandırma bilgileri
 const firebaseConfig = {
-  apiKey: "AIzaSyCHMRO1a5vbUjJ37MQa3GnyFfI5X5f0XXk",
-  authDomain: "academy-335be.firebaseapp.com",
-  projectId: "academy-335be",
-  storageBucket: "academy-335be.firebasestorage.app",
-  messagingSenderId: "253039869385",
-  appId: "1:253039869385:web:268761ae35198251eb3c18",
-  measurementId: "G-2KT03P977K"
+  apiKey: "AIzaSyAt3gb6YqSt-H51b7gmMVkG03B5VvT2FpI",
+  authDomain: "academy-ui-cab87.firebaseapp.com",
+  projectId: "academy-ui-cab87",
+  storageBucket: "academy-ui-cab87.firebasestorage.app",
+  messagingSenderId: "53652387773",
+  appId: "1:53652387773:web:84e3b89b5f3894175244d4",
+  measurementId: "G-5EDPYL7JB2"
 };
 
 // Firebase'i başlat
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 // Kimlik doğrulama, Firestore ve Storage servislerini başlat
 const auth = getAuth(app);

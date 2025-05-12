@@ -93,8 +93,8 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Ana Sayfa', icon: 'fa-home' },
     { path: '/community', label: 'Topluluk', icon: 'fa-users' },
-    { path: '/about', label: 'Hakkımızda', icon: 'fa-info-circle' },
-    { path: '/contact', label: 'İletişim', icon: 'fa-envelope' }
+    { path: '/seminars', label: 'Seminerler', icon: 'fa-chalkboard-teacher' },
+    { path: '/about', label: 'Hakkımızda', icon: 'fa-info-circle' }
   ];
 
   return (

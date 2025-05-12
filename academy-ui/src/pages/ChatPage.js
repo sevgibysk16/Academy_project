@@ -9,7 +9,9 @@ import {
   getDocs,
   query,
   where,
-  addDoc
+  addDoc,
+  doc,
+  getDoc
 } from 'firebase/firestore';
 import {
   connectSocket,
@@ -24,7 +26,6 @@ import './ChatPage.css';
 const ChatPage = () => {
   const { currentUser } = useAuth();
   const db = getFirestore();
-
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -33,6 +34,33 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [typingUser, setTypingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentUserInfo, setCurrentUserInfo] = useState(null);
+
+  // Mevcut kullanıcının bilgilerini getir
+  useEffect(() => {
+    const fetchCurrentUserInfo = async () => {
+      if (!currentUser) return;
+      
+      try {
+        const userRef = doc(db, 'users', currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          setCurrentUserInfo({
+            uid: currentUser.uid,
+            firstName: userData.first_name || '',
+            lastName: userData.last_name || '',
+            fullName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim()
+          });
+        }
+      } catch (error) {
+        console.error('Kullanıcı bilgileri getirilirken hata oluştu:', error);
+      }
+    };
+
+    fetchCurrentUserInfo();
+  }, [currentUser, db]);
 
   // Kullanıcıları getir
   useEffect(() => {
@@ -40,30 +68,33 @@ const ChatPage = () => {
       const q = query(collection(db, 'users'), where('community_member', '==', true));
       const snapshot = await getDocs(q);
       const userList = [];
-
       snapshot.forEach(doc => {
         if (doc.id !== currentUser.uid) {
-          userList.push({ uid: doc.id, ...doc.data() });
+          const userData = doc.data();
+          userList.push({ 
+            uid: doc.id, 
+            ...userData,
+            firstName: userData.first_name || '',
+            lastName: userData.last_name || '',
+            fullName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim()
+          });
         }
       });
-
       setUsers(userList);
       setFilteredUsers(userList);
     };
 
     if (currentUser) fetchUsers();
-  }, [currentUser]);
+  }, [currentUser, db]);
 
   // Sabit grup verisi
   useEffect(() => {
     if (!currentUser) return;
-
     const defaultGroup = {
       id: 'intellica_group',
       name: 'İntellica Seminer Grubu',
       members: [currentUser.uid]
     };
-
     setGroups([defaultGroup]);
   }, [currentUser]);
 
@@ -71,7 +102,6 @@ const ChatPage = () => {
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-
     if (!query) {
       setFilteredUsers(users);
     } else {
@@ -85,39 +115,32 @@ const ChatPage = () => {
   // Socket bağlantısı
   useEffect(() => {
     if (!currentUser) return;
-
     connectSocket(currentUser.uid);
-
     onMessageReceived((received) => {
       const isPrivate =
         selectedUser && (received.from === selectedUser.uid || received.to === selectedUser.uid);
       const isGroup =
         selectedGroup && received.groupId === selectedGroup.id;
-
       if (isPrivate || isGroup) {
         setMessages(prev => [...prev, received]);
       }
     });
-
     onTypingReceived(({ roomId, senderId }) => {
       if (senderId === selectedUser?.uid) {
         setTypingUser(senderId);
         setTimeout(() => setTypingUser(null), 3000);
       }
     });
-
     return () => {
       disconnectSocket();
     };
   }, [currentUser, selectedUser, selectedGroup]);
 
-  // Mesajları getir
+  // Mesajları getir ve kullanıcı bilgilerini ekle
   useEffect(() => {
     const fetchMessages = async () => {
       if (!currentUser) return;
-
       let q;
-
       if (selectedUser) {
         const roomId = [currentUser.uid, selectedUser.uid].sort().join('_');
         q = query(collection(db, 'messages'), where('roomId', '==', roomId));
@@ -126,45 +149,72 @@ const ChatPage = () => {
       } else {
         return;
       }
-
+      
       const snapshot = await getDocs(q);
-      const messagesData = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
+      const messagesData = [];
+      
+      for (const docSnap of snapshot.docs) {
+        const data = docSnap.data();
+        let senderInfo = null;
+        
+        // Gönderenin bilgilerini getir
+        if (data.senderId === currentUser.uid) {
+          senderInfo = currentUserInfo;
+        } else {
+          const senderRef = doc(db, 'users', data.senderId);
+          const senderSnap = await getDoc(senderRef);
+          
+          if (senderSnap.exists()) {
+            const senderData = senderSnap.data();
+            senderInfo = {
+              uid: data.senderId,
+              firstName: senderData.first_name || '',
+              lastName: senderData.last_name || '',
+              fullName: `${senderData.first_name || ''} ${senderData.last_name || ''}`.trim()
+            };
+          }
+        }
+        
+        messagesData.push({
           from: data.senderId,
           to: data.groupId || data.receiverId,
           text: data.message,
-          timestamp: data.timestamp
-        };
-      });
-
+          timestamp: data.timestamp,
+          senderInfo: senderInfo
+        });
+      }
+      
       messagesData.sort((a, b) => a.timestamp - b.timestamp);
       setMessages(messagesData);
     };
 
     fetchMessages();
-  }, [currentUser, selectedUser, selectedGroup]);
+  }, [currentUser, selectedUser, selectedGroup, currentUserInfo, db]);
 
   // Mesaj gönder
   const handleSendMessage = async (text) => {
-    if (!text.trim()) return;
-
+    if (!text.trim() || !currentUserInfo) return;
+    
     let newMessage;
-
     if (selectedUser) {
       const roomId = [currentUser.uid, selectedUser.uid].sort().join('_');
       newMessage = {
         roomId,
         senderId: currentUser.uid,
+        receiverId: selectedUser.uid,
         message: text,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        senderFirstName: currentUserInfo.firstName,
+        senderLastName: currentUserInfo.lastName
       };
     } else if (selectedGroup) {
       newMessage = {
         groupId: selectedGroup.id,
         senderId: currentUser.uid,
         message: text,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        senderFirstName: currentUserInfo.firstName,
+        senderLastName: currentUserInfo.lastName
       };
     } else {
       return;
@@ -182,16 +232,16 @@ const ChatPage = () => {
         ...newMessage,
         from: currentUser.uid,
         to: selectedUser?.uid || selectedGroup?.id,
-        text
+        text,
+        senderInfo: currentUserInfo
       }
     ]);
-
+    
     sendMessage(newMessage);
   };
 
   const handleTyping = () => {
     if (!selectedUser) return;
-
     const roomId = [currentUser.uid, selectedUser.uid].sort().join('_');
     sendTyping(roomId, currentUser.uid);
   };
@@ -214,7 +264,6 @@ const ChatPage = () => {
         searchQuery={searchQuery}
         onSearchChange={handleSearch}
       />
-
       <div className="chat-section">
         {(selectedUser || selectedGroup) ? (
           <>
@@ -222,9 +271,10 @@ const ChatPage = () => {
               messages={messages}
               selectedUser={selectedUser}
               selectedGroup={selectedGroup}
+              currentUser={currentUser}
             />
             {typingUser && selectedUser && (
-              <p>{selectedUser.name} yazıyor...</p>
+              <p>{selectedUser.fullName} yazıyor...</p>
             )}
             <MessageInput
               onSend={handleSendMessage}
