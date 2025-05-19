@@ -1,14 +1,12 @@
-// src/utils/socket.js
-
 import { io } from 'socket.io-client';
 
 let socket = null;
 
-// WebSocket'e bağlan
+// Connect to WebSocket
 export const connectWebSocket = (userId) => {
   socket = io('http://localhost:5000', {
     query: { userId },
-    transports: ['websocket'],
+    transports: ['websocket', 'polling']
   });
 
   socket.on('connect', () => {
@@ -17,10 +15,6 @@ export const connectWebSocket = (userId) => {
 
   socket.on('disconnect', () => {
     console.warn('🔌 WebSocket bağlantısı kesildi.');
-  });
-
-  socket.on('connect_error', (error) => {
-    console.error('❌ Bağlantı hatası:', error);
   });
 
   return socket;
@@ -34,6 +28,7 @@ export const connectSocket = (userId) => {
   return socket;
 };
 
+// Message functions
 export const sendMessage = (message) => {
   if (socket && socket.connected) {
     socket.emit('sendMessage', message);
@@ -48,26 +43,113 @@ export const onMessageReceived = (callback) => {
   }
 };
 
-// 🟢 Yazıyor bildirimi gönder
-export const sendTyping = (roomId, senderId) => {
+// Typing notification functions
+export const sendTyping = (isTyping) => {
   if (socket && socket.connected) {
-    socket.emit('typing', { roomId, senderId });
+    socket.emit('typing', isTyping);
   }
 };
 
-// 🟢 Yazıyor bildirimi dinle
 export const onTypingReceived = (callback) => {
   if (socket) {
-    socket.on('typing', callback);
+    socket.on('userTyping', callback);
   }
 };
 
-export const userTyping = (roomId, senderId, isTyping) => {
+// Seminar room functions
+export const joinSeminarRoom = (seminarId, userId, isHost) => {
   if (socket && socket.connected) {
-    socket.emit('userTyping', { roomId, senderId, isTyping });
+    socket.emit('joinSeminarRoom', { seminarId, userId, isHost });
   }
 };
 
+export const leaveSeminarRoom = (seminarId, userId) => {
+  if (socket && socket.connected) {
+    socket.emit('leaveSeminarRoom', { seminarId, userId });
+  }
+};
+
+export const sendSeminarMessage = (seminarId, message) => {
+  if (socket && socket.connected) {
+    socket.emit('sendSeminarMessage', { seminarId, message });
+  }
+};
+
+export const onSeminarMessage = (callback) => {
+  if (socket) {
+    socket.on('seminarMessage', callback);
+  }
+};
+
+export const onSeminarParticipants = (callback) => {
+  if (socket) {
+    socket.on('seminarParticipants', callback);
+  }
+};
+
+// Live streaming functions
+export const startStreaming = (seminarId, userId) => {
+  if (socket && socket.connected) {
+    socket.emit('startStreaming', { seminarId, userId });
+  }
+};
+
+export const stopStreaming = (seminarId, userId) => {
+  if (socket && socket.connected) {
+    socket.emit('stopStreaming', { seminarId, userId });
+  }
+};
+
+export const onStreamData = (callback) => {
+  if (socket) {
+    socket.on('streamData', callback);
+  }
+};
+
+export const onStreamStarted = (callback) => {
+  if (socket) {
+    socket.on('streamStarted', callback);
+  }
+};
+
+export const onStreamStopped = (callback) => {
+  if (socket) {
+    socket.on('streamStopped', callback);
+  }
+};
+
+export const onStreamError = (callback) => {
+  if (socket) {
+    socket.on('streamError', callback);
+  }
+};
+
+export const sendStreamData = (seminarId, data) => {
+  if (socket && socket.connected) {
+    socket.emit('streamData', { seminarId, data });
+  }
+};
+
+// User events
+export const onUserJoinedSeminar = (callback) => {
+  if (socket) {
+    socket.on('userJoinedSeminar', callback);
+  }
+};
+
+export const onUserLeftSeminar = (callback) => {
+  if (socket) {
+    socket.on('userLeftSeminar', callback);
+  }
+};
+
+export const onSeminarEnded = (callback) => {
+  if (socket) {
+    socket.on('seminarEnded', callback);
+  }
+};
+
+// Connection management
 export const closeSocket = () => {
   if (socket) {
     socket.disconnect();
@@ -80,7 +162,6 @@ export const getSocket = () => socket;
 export const disconnectSocket = () => {
   if (socket) {
     socket.disconnect();
-    console.log('✅ WebSocket bağlantısı kesildi');
     socket = null;
   }
-};
+}; 

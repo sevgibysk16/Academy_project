@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';  // Firebase Authentication hook'u
+import { useAuth } from '../../context/AuthContext';
 import './AuthStyles.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();  // Firebase login fonksiyonunu kullanmak için
+  const { login } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    userType: 'student' // Varsayılan olarak öğrenci seçili
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,6 @@ const Login = () => {
       [name]: value
     });
     
-    // Kullanıcı yazmaya başladığında ilgili hata mesajını temizle
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -54,6 +54,11 @@ const Login = () => {
       newErrors.password = 'Şifre en az 6 karakter olmalıdır';
     }
     
+    // Kullanıcı tipi doğrulama
+    if (!formData.userType) {
+      newErrors.userType = 'Kullanıcı tipi seçmelisiniz';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -66,8 +71,8 @@ const Login = () => {
       setLoginError('');
       
       try {
-        // Firebase login fonksiyonunu kullan
-        const result = await login(formData.email, formData.password);
+        // Firebase login fonksiyonunu kullan ve userType'ı da gönder
+        const result = await login(formData.email, formData.password, formData.userType);
         
         if (result.success) {
           // Eğer "Beni hatırla" seçeneği işaretlenmişse, token'ı localStorage'da sakla
@@ -77,7 +82,12 @@ const Login = () => {
             localStorage.setItem('rememberMe', 'false');
           }
           
-          navigate('/dashboard');  // Başarıyla giriş yapıldığında yönlendir
+          // Kullanıcı tipine göre farklı dashboard'a yönlendir
+          if (formData.userType === 'student') {
+            navigate('/student-dashboard');
+          } else {
+            navigate('/academic-dashboard');
+          }
         } else {
           setLoginError(result.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
         }
@@ -98,6 +108,35 @@ const Login = () => {
         {loginError && <div className="error-message">{loginError}</div>}
         
         <form onSubmit={handleSubmit}>
+          <div className="form-group user-type-selection">
+            <label>Kullanıcı Tipi</label>
+            <div className="radio-group">
+              <div className="radio-option">
+                <input
+                  type="radio"
+                  id="student"
+                  name="userType"
+                  value="student"
+                  checked={formData.userType === 'student'}
+                  onChange={handleChange}
+                />
+                <label htmlFor="student">Öğrenci</label>
+              </div>
+              <div className="radio-option">
+                <input
+                  type="radio"
+                  id="academic"
+                  name="userType"
+                  value="academic"
+                  checked={formData.userType === 'academic'}
+                  onChange={handleChange}
+                />
+                <label htmlFor="academic">Akademisyen</label>
+              </div>
+            </div>
+            {errors.userType && <div className="field-error">{errors.userType}</div>}
+          </div>
+          
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -130,6 +169,7 @@ const Login = () => {
                 className="password-toggle"
                 onClick={togglePasswordVisibility}
               >
+               
               </span>
             </div>
             {errors.password && <div className="field-error">{errors.password}</div>}

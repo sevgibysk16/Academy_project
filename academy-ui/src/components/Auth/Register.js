@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';  // Firebase AuthContext hook'u
+import { useAuth } from '../../context/AuthContext';
 import './AuthStyles.css';
 
 const Register = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();  // Firebase authService'den register fonksiyonunu kullanıyoruz
+  const { register } = useAuth();
   
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    userType: 'student', // Varsayılan olarak öğrenci seçili
+    studentId: '',       // Öğrenci numarası (sadece öğrenciler için)
+    academicTitle: '',   // Akademik unvan (sadece akademisyenler için)
+    department: '',      // Bölüm bilgisi (her iki kullanıcı tipi için)
+    institution: ''      // Kurum bilgisi (her iki kullanıcı tipi için)
   });
+  
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [registerError, setRegisterError] = useState('');
@@ -28,7 +34,6 @@ const Register = () => {
       [name]: value
     });
     
-    // Kullanıcı yazmaya başladığında ilgili hata mesajını temizle
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -79,6 +84,31 @@ const Register = () => {
       newErrors.confirmPassword = 'Şifreler eşleşmiyor';
     }
     
+    // Kullanıcı tipi doğrulama
+    if (!formData.userType) {
+      newErrors.userType = 'Kullanıcı tipi seçmelisiniz';
+    }
+    
+    // Öğrenci numarası doğrulama (sadece öğrenciler için)
+    if (formData.userType === 'student' && !formData.studentId) {
+      newErrors.studentId = 'Öğrenci numarası gereklidir';
+    }
+    
+    // Akademik unvan doğrulama (sadece akademisyenler için)
+    if (formData.userType === 'academic' && !formData.academicTitle) {
+      newErrors.academicTitle = 'Akademik unvan gereklidir';
+    }
+    
+    // Bölüm doğrulama
+    if (!formData.department) {
+      newErrors.department = 'Bölüm bilgisi gereklidir';
+    }
+    
+    // Kurum doğrulama
+    if (!formData.institution) {
+      newErrors.institution = 'Kurum bilgisi gereklidir';
+    }
+    
     // Kullanım şartları doğrulama
     if (!agreeTerms) {
       newErrors.agreeTerms = 'Devam etmek için kullanım şartlarını kabul etmelisiniz';
@@ -99,11 +129,21 @@ const Register = () => {
         // Firebase Authentication register fonksiyonunu kullan
         const result = await register(formData.email, formData.password, {
           firstName: formData.firstName,
-          lastName: formData.lastName
+          lastName: formData.lastName,
+          userType: formData.userType,
+          studentId: formData.userType === 'student' ? formData.studentId : null,
+          academicTitle: formData.userType === 'academic' ? formData.academicTitle : null,
+          department: formData.department,
+          institution: formData.institution
         });
         
         if (result.success) {
-          navigate('/login', { state: { message: 'Kayıt başarılı! Şimdi giriş yapabilirsiniz.' } });
+          navigate('/login', { 
+            state: { 
+              message: 'Kayıt başarılı! Şimdi giriş yapabilirsiniz.',
+              userType: formData.userType 
+            } 
+          });
         } else {
           setRegisterError(result.message || 'Kayıt sırasında bir hata oluştu.');
         }
@@ -124,6 +164,35 @@ const Register = () => {
         {registerError && <div className="error-message">{registerError}</div>}
         
         <form onSubmit={handleSubmit}>
+          <div className="form-group user-type-selection">
+            <label>Kullanıcı Tipi</label>
+            <div className="radio-group">
+              <div className="radio-option">
+                <input
+                  type="radio"
+                  id="student"
+                  name="userType"
+                  value="student"
+                  checked={formData.userType === 'student'}
+                  onChange={handleChange}
+                />
+                <label htmlFor="student">Öğrenci</label>
+              </div>
+              <div className="radio-option">
+                <input
+                  type="radio"
+                  id="academic"
+                  name="userType"
+                  value="academic"
+                  checked={formData.userType === 'academic'}
+                  onChange={handleChange}
+                />
+                <label htmlFor="academic">Akademisyen</label>
+              </div>
+                          </div>
+            {errors.userType && <div className="field-error">{errors.userType}</div>}
+          </div>
+          
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="firstName">Ad</label>
@@ -169,6 +238,80 @@ const Register = () => {
               required
             />
             {errors.email && <div className="field-error">{errors.email}</div>}
+          </div>
+          
+          {/* Öğrenci numarası (sadece öğrenciler için) */}
+          {formData.userType === 'student' && (
+            <div className="form-group">
+              <label htmlFor="studentId">Öğrenci Numarası</label>
+              <input
+                type="text"
+                id="studentId"
+                name="studentId"
+                value={formData.studentId}
+                onChange={handleChange}
+                placeholder="Öğrenci numaranızı giriniz"
+                className={errors.studentId ? "invalid" : ""}
+                required
+              />
+              {errors.studentId && <div className="field-error">{errors.studentId}</div>}
+            </div>
+          )}
+          
+          {/* Akademik unvan (sadece akademisyenler için) */}
+          {formData.userType === 'academic' && (
+            <div className="form-group">
+              <label htmlFor="academicTitle">Akademik Unvan</label>
+              <select
+                id="academicTitle"
+                name="academicTitle"
+                value={formData.academicTitle}
+                onChange={handleChange}
+                className={errors.academicTitle ? "invalid" : ""}
+                required
+              >
+                <option value="">Unvan seçiniz</option>
+                <option value="Prof. Dr.">Prof. Dr.</option>
+                <option value="Doç. Dr.">Doç. Dr.</option>
+                <option value="Dr. Öğr. Üyesi">Dr. Öğr. Üyesi</option>
+                <option value="Öğr. Gör.">Öğr. Gör.</option>
+                <option value="Arş. Gör.">Arş. Gör.</option>
+                <option value="Diğer">Diğer</option>
+              </select>
+              {errors.academicTitle && <div className="field-error">{errors.academicTitle}</div>}
+            </div>
+          )}
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="department">Bölüm</label>
+              <input
+                type="text"
+                id="department"
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                placeholder="Bölümünüzü giriniz"
+                className={errors.department ? "invalid" : ""}
+                required
+              />
+              {errors.department && <div className="field-error">{errors.department}</div>}
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="institution">Kurum</label>
+              <input
+                type="text"
+                id="institution"
+                name="institution"
+                value={formData.institution}
+                onChange={handleChange}
+                placeholder="Kurumunuzu giriniz"
+                className={errors.institution ? "invalid" : ""}
+                required
+              />
+              {errors.institution && <div className="field-error">{errors.institution}</div>}
+            </div>
           </div>
           
           <div className="form-group">
@@ -248,3 +391,5 @@ const Register = () => {
 };
 
 export default Register;
+
+            

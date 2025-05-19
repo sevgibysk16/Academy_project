@@ -1,0 +1,271 @@
+.tez-listesi-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.tez-listesi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.tez-listesi-header h1 {
+  font-size: 2.2rem;
+  color: #333;
+  margin: 0;
+}
+
+.yeni-tez-btn {
+  display: inline-flex;
+  align-items: center;
+  background-color: #4a6cf7;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.yeni-tez-btn:hover {
+  background-color: #3a5ce5;
+}
+
+.yeni-tez-btn i {
+  margin-right: 8px;
+}
+
+.filtre-arama-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filtre-container {
+  display: flex;
+  align-items: center;
+}
+
+.filtre-container label {
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.filtre-container select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 1rem;
+}
+
+.arama-container {
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+.arama-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: white;
+}
+
+.tez-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.tez-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tez-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tez-card-content {
+  padding: 1.5rem;
+}
+
+.tez-title {
+  font-size: 1.25rem;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+.tez-description {
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.tez-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.tez-type {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tez-type-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tez-type-tez_savunma {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.tez-type-tez_oneri {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.tez-type-seminer {
+  background-color: #fff8e1;
+  color: #ff8f00;
+}
+
+.transkript-status {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.transkript-tamamlandi {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.transkript-beklemede {
+  background-color: #fff8e1;
+  color: #ff8f00;
+}
+
+.transkript-hata {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #4a6cf7;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.daha-fazla-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2.5rem;
+}
+
+.daha-fazla-btn {
+  background-color: transparent;
+  border: 2px solid #4a6cf7;
+  color: #4a6cf7;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.daha-fazla-btn:hover {
+  background-color: #4a6cf7;
+  color: white;
+}
+
+.no-tez-message {
+  text-align: center;
+  padding: 3rem 0;
+  color: #666;
+}
+
+.no-tez-action {
+  margin-top: 1.5rem;
+}
+
+.yeni-tez-btn-alt {
+  display: inline-flex;
+  align-items: center;
+  background-color: #4a6cf7;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .tez-listesi-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .filtre-arama-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .arama-container {
+    max-width: 100%;
+  }
+}

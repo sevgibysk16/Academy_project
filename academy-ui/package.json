@@ -11,8 +11,15 @@
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.8.4",
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "firebase": "^11.6.1",
+    "firebase-admin": "^13.4.0",
     "formik": "^2.4.6",
+    "helmet": "^8.1.0",
+    "hls.js": "^1.6.2",
+    "morgan": "^1.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
@@ -22,6 +29,7 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4",
+    "winston": "^3.17.0",
     "yup": "^1.6.1"
   },
   "scripts": {
@@ -50,6 +58,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.1.0"
+    "@capacitor/cli": "^7.1.0",
+    "nodemon": "^3.1.10"
   }
 }

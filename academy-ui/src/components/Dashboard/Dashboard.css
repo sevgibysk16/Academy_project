@@ -3,31 +3,54 @@
   margin: 0 auto;
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  min-height: 100vh; /* Sayfa yüksekliği tamamlanır */
-  padding-top: 60px; /* Başlık ile içerik arasındaki boşluk */
+  min-height: 100vh;
+  padding-top: 60px;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px; /* Alt boşluk */
-  height: 80px; /* Yükseklik */
+  align-items: flex-start;
+  margin-bottom: 30px;
   padding-bottom: 15px;
   border-bottom: 1px solid #e0e0e0;
-  position: relative; /* Header'ı konumlandırmak için */
-  box-sizing: border-box; /* Padding ve border'ı genişlik içine al */
+  position: relative;
+  box-sizing: border-box;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard-header h2 {
   font-size: 28px;
   color: #333;
-  margin: 0;
+  margin: 0 0 10px 0;
+}
+
+.user-type-badge {
+  display: flex;
+  align-items: center;
+  background-color: #f0f7ff;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #4a6cf7;
+  width: fit-content;
+}
+
+.user-type-icon {
+  margin-right: 6px;
+  font-size: 16px;
 }
 
 .last-login {
   color: #666;
   font-size: 14px;
+  background-color: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 6px;
 }
 
 .dashboard-grid {
@@ -56,7 +79,6 @@
   padding-bottom: 10px;
   border-bottom: 1px solid #f0f0f0;
 }
-
 .card-icon {
   font-size: 24px;
   margin-right: 10px;
@@ -69,16 +91,58 @@
   color: #333;
 }
 
-.user-info p {
-  margin: 10px 0;
+/* Kullanıcı bilgileri bölümü */
+.user-info {
   display: flex;
-  align-items: center;
-  color: #555;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.user-info-row {
+  display: flex;
+  align-items: flex-start;
 }
 
 .info-icon {
-  margin-right: 8px;
+  margin-right: 12px;
   color: #4a6cf7;
+  font-size: 18px;
+  min-width: 20px;
+  margin-top: 2px;
+}
+
+.user-info-row div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.user-info-row strong {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 3px;
+}
+
+.user-info-row span {
+  font-size: 16px;
+  color: #333;
+}
+
+.edit-profile-btn {
+  margin-top: 15px;
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  align-self: flex-start;
+}
+
+.edit-profile-btn:hover {
+  background-color: #3a5bd9;
 }
 
 /* İstatistikler bölümü */
@@ -112,6 +176,7 @@
 .stat-label {
   font-size: 14px;
   color: #666;
+  text-align: center;
 }
 
 /* Aktiviteler bölümü */
@@ -164,6 +229,66 @@
   padding: 20px 0;
 }
 
+.view-all-btn {
+  margin-top: 15px;
+  background-color: transparent;
+  color: #4a6cf7;
+  border: 1px solid #4a6cf7;
+  border-radius: 6px;
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.view-all-btn:hover {
+  background-color: #f0f7ff;
+}
+
+/* Öğrenci ve Akademisyen özel kartları */
+.student-card, .academic-card {
+  background-color: #f0f7ff;
+}
+
+.student-content, .academic-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.student-stats, .academic-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.student-stat-item, .academic-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.student-action-btn, .academic-action-btn {
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: center;
+}
+
+.student-action-btn:hover, .academic-action-btn:hover {
+  background-color: #3a5bd9;
+}
+
 /* Yükleme göstergesi */
 .loading-container {
   display: flex;
@@ -204,13 +329,21 @@
     grid-template-columns: 1fr;
   }
   
-  .stats-grid {
+  .stats-grid, .student-stats, .academic-stats {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 480px) {
-  .stats-grid {
+  .stats-grid, .student-stats, .academic-stats {
     grid-template-columns: 1fr;
+  }
+  
+  .user-info-row {
+    flex-direction: column;
+  }
+  
+  .info-icon {
+    margin-bottom: 5px;
   }
 }

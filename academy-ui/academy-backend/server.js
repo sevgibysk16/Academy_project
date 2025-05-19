@@ -1,111 +1,179 @@
 const express = require('express');
 const http = require('http');
-const cors = require('cors');
 const { Server } = require('socket.io');
-const dotenv = require('dotenv');
-const { db } = require('./firebase'); // Firebase bağlantısı
-const { authenticateUser } = require('./auth'); // ✅ Middleware import edildi
-const seminarRoutes = require('./routes/seminarRoutes');
-
-// .env dosyasını yükle
-dotenv.config();
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
 
-// Middleware
-app.use(cors());
+// CORS ayarları
+app.use(cors({
+  origin: ["http://localhost:3000", "http://localhost:3001"],
+  methods: ["GET", "POST"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Seminer rotaları (korumalı)
-app.use('/seminars', authenticateUser, seminarRoutes); // ✅ Kimlik doğrulama eklendi
-
-// Test endpoint
-app.get('/', (req, res) => {
-  res.send('Sunucu çalışıyor!');
-});
-
-// Socket.IO başlat
+// Socket.IO yapılandırması
 const io = new Server(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
+    origin: ["http://localhost:3000", "http://localhost:3001"],
+    methods: ["GET", "POST"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
   },
+  transports: ['websocket', 'polling'],
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  connectTimeout: 45000,
+  allowEIO3: true
 });
 
-// Socket.IO işlemleri
+// Aktif odalar ve katılımcılar için Map
+const seminarRooms = new Map();
+
+// Socket.IO bağlantı yönetimi
 io.on('connection', (socket) => {
-  socket.on('join-room', (roomId, userId, isAdmin) => {
-    socket.join(roomId);
+  console.log('Yeni kullanıcı bağlandı:', socket.id);
 
-    socket.to(roomId).emit('user-connected', userId, isAdmin);
+  // Bağlantı durumunu kontrol et
+  socket.on('connect_error', (error) => {
+    console.error('Bağlantı hatası:', error);
+  });
 
-    socket.on('signal', (data) => {
-      io.to(data.to).emit('signal', { userId: data.userId, signal: data.signal });
-    });
+  socket.on('error', (error) => {
+    console.error('Socket hatası:', error);
+  });
 
-    socket.on('send-message', (roomId, message) => {
-      socket.to(roomId).emit('receive-message', message);
-    });
+  // Seminer odasına katılma
+  socket.on('joinSeminarRoom', ({ seminarId, userId, isHost }) => {
+    try {
+      socket.join(seminarId);
+      
+      if (!seminarRooms.has(seminarId)) {
+        seminarRooms.set(seminarId, {
+          participants: new Map(),
+          messages: []
+        });
+      }
+      
+      const room = seminarRooms.get(seminarId);
+      room.participants.set(userId, {
+        id: userId,
+        socketId: socket.id,
+        isHost,
+        joinedAt: Date.now()
+      });
+      
+      // Katılımcılara bildirim
+      socket.to(seminarId).emit('userJoinedSeminar', { userId });
+      
+      // Mevcut katılımcıları ve mesajları gönder
+      socket.emit('seminarParticipants', {
+        participants: Array.from(room.participants.values()),
+        messages: room.messages
+      });
+      
+      console.log(`${userId} kullanıcısı ${seminarId} odasına katıldı`);
+    } catch (error) {
+      console.error('Oda katılım hatası:', error);
+      socket.emit('error', { message: 'Oda katılım hatası' });
+    }
+  });
 
-    socket.on('end-seminar', (roomId) => {
-      io.to(roomId).emit('seminar-ended');
-    });
+  // Seminer mesajı gönderme
+  socket.on('sendSeminarMessage', ({ seminarId, message }) => {
+    try {
+      const room = seminarRooms.get(seminarId);
+      if (!room) return;
 
-    socket.on('disconnect', () => {
-      socket.to(roomId).emit('user-disconnected', userId);
+      const newMessage = {
+        id: Date.now().toString(),
+        ...message,
+        timestamp: Date.now()
+      };
+      
+      room.messages.push(newMessage);
+      io.to(seminarId).emit('seminarMessage', newMessage);
+      
+      console.log(`${message.senderId} kullanıcısı ${seminarId} odasına mesaj gönderdi`);
+    } catch (error) {
+      console.error('Mesaj gönderme hatası:', error);
+    }
+  });
+
+  // Yazma durumu
+  socket.on('typing', ({ seminarId, userId, isTyping }) => {
+    socket.to(seminarId).emit('userTyping', { userId, isTyping });
+  });
+
+  // Canlı yayın başlatma
+  socket.on('startStreaming', ({ seminarId, userId }) => {
+    socket.join(`${seminarId}-stream`);
+    io.to(seminarId).emit('streamStarted', { userId });
+    console.log(`${userId} kullanıcısı ${seminarId} odasında yayın başlattı`);
+  });
+
+  // Canlı yayın verisi
+  socket.on('streamData', ({ seminarId, data }) => {
+    socket.to(`${seminarId}-stream`).emit('streamData', data);
+  });
+
+  // Canlı yayın durdurma
+  socket.on('stopStreaming', ({ seminarId, userId }) => {
+    socket.leave(`${seminarId}-stream`);
+    io.to(seminarId).emit('streamStopped', { userId });
+    console.log(`${userId} kullanıcısı ${seminarId} odasında yayını durdurdu`);
+  });
+
+  // Seminer odasından ayrılma
+  socket.on('leaveSeminarRoom', ({ seminarId, userId }) => {
+    try {
+      const room = seminarRooms.get(seminarId);
+      if (!room) return;
+
+      socket.leave(seminarId);
+      room.participants.delete(userId);
+
+      socket.to(seminarId).emit('userLeftSeminar', { userId });
+
+      if (room.participants.size === 0) {
+        seminarRooms.delete(seminarId);
+        io.to(seminarId).emit('seminarEnded', { seminarId });
+      }
+
+      console.log(`${userId} kullanıcısı ${seminarId} odasından ayrıldı`);
+    } catch (error) {
+      console.error('Oda ayrılma hatası:', error);
+    }
+  });
+
+  // Bağlantı kesildiğinde
+  socket.on('disconnect', (reason) => {
+    console.log('Kullanıcı bağlantısı kesildi:', socket.id, 'Sebep:', reason);
+    
+    // Kullanıcının bulunduğu odaları temizle
+    seminarRooms.forEach((room, seminarId) => {
+      const participant = Array.from(room.participants.values())
+        .find(p => p.socketId === socket.id);
+      
+      if (participant) {
+        room.participants.delete(participant.id);
+        socket.to(seminarId).emit('userLeftSeminar', { userId: participant.id });
+        
+        if (room.participants.size === 0) {
+          seminarRooms.delete(seminarId);
+          io.to(seminarId).emit('seminarEnded', { seminarId });
+        }
+      }
     });
   });
-});
-
-// Mesaj gönderme API'si
-app.post('/sendMessage', async (req, res) => {
-  const { fromUserId, toUserId, text } = req.body;
-
-  try {
-    await db.collection('messages').add({
-      from: fromUserId,
-      to: toUserId,
-      text,
-      timestamp: Date.now(),
-      status: 'sent',
-    });
-    res.status(200).send('Mesaj gönderildi');
-  } catch (error) {
-    console.error("Mesaj gönderilemedi:", error);
-    res.status(500).send('Mesaj gönderilemedi');
-  }
-});
-
-// Mesaj durumu güncelleme API'si
-app.post('/updateMessageStatus', async (req, res) => {
-  const { messageId, status } = req.body;
-
-  try {
-    await db.collection('messages').doc(messageId).update({ status });
-    res.status(200).send('Mesaj durumu güncellendi');
-  } catch (error) {
-    console.error("Durum güncellenemedi:", error);
-    res.status(500).send('Mesaj durumu güncellenemedi');
-  }
-});
-
-// Kullanıcı yazma durumu güncelleme API'si
-app.post('/setUserTypingStatus', async (req, res) => {
-  const { userId, isTyping } = req.body;
-
-  try {
-    await db.collection('users').doc(userId).update({ isTyping });
-    res.status(200).send('Kullanıcı durumu güncellendi');
-  } catch (error) {
-    console.error("Yazma durumu güncellenemedi:", error);
-    res.status(500).send('Kullanıcı durumu güncellenemedi');
-  }
 });
 
 // Sunucuyu başlat
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`✅ Sunucu ${PORT} portunda çalışıyor`);
-});
+  console.log(`Sunucu ${PORT} portunda çalışıyor`);
+}); 

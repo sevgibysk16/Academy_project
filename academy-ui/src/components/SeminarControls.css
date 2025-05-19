@@ -1,0 +1,204 @@
+.seminar-controls {
+  max-width: 600px;
+  margin: 40px auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.tab {
+  flex: 1;
+  padding: 15px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.tab:hover {
+  background-color: #f5f5f5;
+}
+
+.tab.active {
+  background-color: #2196f3;
+  color: white;
+}
+
+.tab-content {
+  padding: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.submit-button,
+.cancel-button,
+.secondary-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button {
+  background-color: #2196f3;
+  color: white;
+  flex: 1;
+}
+
+.submit-button:hover {
+  background-color: #1976d2;
+}
+
+.submit-button:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.cancel-button:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  background-color: #f5f5f5;
+  color: #333;
+  flex: 1;
+}
+
+.secondary-button:hover {
+  background-color: #e0e0e0;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.seminar-created-info {
+  text-align: center;
+}
+
+.seminar-created-info h3 {
+  color: #4caf50;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.seminar-id-display {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 4px;
+  margin-bottom: 30px;
+}
+
+.seminar-id-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.seminar-id {
+  background-color: #fff;
+  padding: 12px 20px;
+  border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  flex: 1;
+  text-align: center;
+}
+
+.copy-button {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+  background-color: #1976d2;
+}
+
+.seminar-id-info {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+  .seminar-controls {
+    margin: 20px 10px;
+    border-radius: 4px;
+  }
+  
+  .tab-content {
+    padding: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .submit-button,
+  .cancel-button,
+  .secondary-button {
+    width: 100%;
+  }
+}
