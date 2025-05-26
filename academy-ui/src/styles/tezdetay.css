@@ -1,35 +1,58 @@
+/* Main container */
 .tez-detay-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
 
-.tez-header {
-  margin-bottom: 2rem;
+/* Header styles */
+.tez-detay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.tez-header h1 {
+.tez-detay-header h1 {
   font-size: 2.2rem;
   color: #333;
-  margin-bottom: 1rem;
-    line-height: 1.3;
+  margin: 0;
+  line-height: 1.3;
 }
 
-.tez-meta {
+.duzenle-btn {
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.duzenle-btn:hover {
+  background-color: #3a5ce5;
+}
+
+/* Meta information styles */
+.tez-meta-bilgiler {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  color: #666;
-  font-size: 0.95rem;
-}
-
-.tez-meta span {
-  display: flex;
+  margin-bottom: 2rem;
   align-items: center;
 }
 
-.tez-meta i {
-  margin-right: 0.5rem;
+.tez-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.95rem;
 }
 
 .tez-type-badge {
@@ -55,147 +78,118 @@
   color: #ff8f00;
 }
 
-.tez-content {
+/* Media container styles */
+.tez-medya-container {
+  width: 100%;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.tez-medya-container iframe {
+  display: block;
+}
+
+/* Description styles */
+.tez-aciklama {
   background-color: white;
   border-radius: 10px;
-  overflow: hidden;
+  padding: 2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
 }
 
-.tez-media-container {
-  width: 100%;
-  background-color: #000;
-}
-
-.tez-video {
-  width: 100%;
-  max-height: 560px;
-  display: block;
-}
-
-.tez-audio-container {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #f8f9fa;
-}
-
-.audio-thumbnail {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background-color: #4a6cf7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.audio-thumbnail i {
-  font-size: 3rem;
-  color: white;
-}
-
-.tez-audio {
-  width: 100%;
-  max-width: 500px;
-}
-
-.tez-description {
-  padding: 2rem;
-  border-bottom: 1px solid #eee;
-}
-
-.tez-description h3 {
+.tez-aciklama h2 {
   font-size: 1.5rem;
   color: #333;
   margin-top: 0;
   margin-bottom: 1rem;
 }
 
-.tez-description p {
+.tez-aciklama p {
   line-height: 1.6;
   color: #555;
 }
 
+/* Transcript container styles */
 .tez-transkript-container {
-  padding: 0 2rem 2rem;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.transkript-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.transkript-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.transkript-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.transkript-btn, 
+.transkript-toggle-btn, 
+.transkript-iyilestir-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+.transkript-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.transkript-btn:hover:not(:disabled) {
+  background-color: #1976d2;
 }
 
 .transkript-toggle-btn {
   background-color: #f0f4ff;
   color: #4a6cf7;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 1rem;
-  transition: background-color 0.3s;
 }
 
 .transkript-toggle-btn:hover {
   background-color: #e0e8ff;
 }
 
-.tez-transkript {
-  margin-top: 1.5rem;
-}
-
-.tez-transkript h3 {
-  font-size: 1.5rem;
+.transkript-iyilestir-btn {
+  background-color: #f5f5f5;
   color: #333;
-  margin-bottom: 1rem;
+  border: 1px solid #ddd;
 }
 
-.transkript-content {
-  background-color: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 8px;
-  max-height: 400px;
-  overflow-y: auto;
+.transkript-iyilestir-btn:hover:not(:disabled) {
+  background-color: #e0e0e0;
 }
 
-.transkript-content p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
-}
-
-.transkript-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-
-.save-btn {
-  background-color: transparent;
-  border: 1px solid #4a6cf7;
-  color: #4a6cf7;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+.transkript-status {
+  padding: 1rem 2rem;
   font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.3s, color 0.3s;
 }
 
-.save-btn:hover {
-  background-color: #4a6cf7;
-  color: white;
-}
-
-.save-btn i {
-  margin-right: 0.5rem;
-}
-
-.transkript-beklemede, .transkript-hata {
-  padding: 1.5rem 2rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.transkript-tamamlandi {
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
 .transkript-beklemede {
@@ -208,31 +202,56 @@
   color: #c62828;
 }
 
-.transkript-beklemede i, .transkript-hata i {
-  font-size: 1.5rem;
+.transkript-content {
+  padding: 2rem;
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
 }
 
-.tez-comments-section {
+.transkript-content pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Spinner for loading states */
+.spinner-small {
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 3px solid #4a6cf7;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Comments section styles */
+.tez-yorumlar-container {
   background-color: white;
   border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 2rem;
-  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.tez-comments-section h3 {
+.tez-yorumlar-container h2 {
   font-size: 1.5rem;
   color: #333;
   margin-top: 0;
   margin-bottom: 1.5rem;
 }
 
-.comment-form {
+.yorum-form {
   margin-bottom: 2rem;
 }
 
-.comment-form textarea {
+.yorum-form textarea {
   width: 100%;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -243,7 +262,7 @@
   margin-bottom: 1rem;
 }
 
-.comment-submit-btn {
+.yorum-gonder-btn {
   background-color: #4a6cf7;
   color: white;
   border: none;
@@ -251,146 +270,103 @@
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
-  float: right;
   transition: background-color 0.3s;
 }
 
-.comment-submit-btn:hover:not(:disabled) {
+.yorum-gonder-btn:hover:not(:disabled) {
   background-color: #3a5ce5;
 }
 
-.comment-submit-btn:disabled {
+.yorum-gonder-btn:disabled {
   background-color: #a0b0f8;
   cursor: not-allowed;
 }
 
-.login-to-comment {
-  background-color: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 8px;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.login-to-comment p {
-  margin: 0;
+.login-reminder {
+  margin-top: 1rem;
   color: #666;
+  text-align: center;
 }
 
-.login-to-comment button {
-  background: none;
-  border: none;
+.login-reminder a {
   color: #4a6cf7;
+  text-decoration: none;
   font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  margin-left: 0.25rem;
 }
 
-.login-to-comment button:hover {
+.login-reminder a:hover {
   text-decoration: underline;
 }
 
-.comments-list {
+.yorumlar-listesi {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.comment {
-  border-bottom: 1px solid #eee;
-  padding-bottom: 1.5rem;
+.yorum-item {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.comment:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.comment-header {
+.yorum-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.comment-user {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.comment-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: #4a6cf7;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.comment-username {
+.yorum-kullanici {
   font-weight: 600;
   color: #333;
 }
 
-.comment-date {
+.yorum-tarih {
   font-size: 0.85rem;
   color: #777;
 }
 
-.comment-content {
+.yorum-icerik {
   line-height: 1.6;
   color: #555;
+  margin-bottom: 1rem;
 }
 
-.no-comments {
+.no-yorumlar {
   text-align: center;
-  padding: 2rem 0;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
   color: #666;
 }
 
-.tez-actions {
-  display: flex;
-  justify-content: space-between;
+/* Highlight styles for comments */
+.yorum-highlight {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
 }
 
-.back-button, .edit-button {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-  border: none;
+.yorum-highlight h4 {
+  margin: 0 0 0.5rem 0;
+  color: #495057;
+  font-size: 0.9rem;
 }
 
-.back-button {
-  background-color: #f5f5f5;
-  color: #555;
+.yorum-highlight blockquote {
+  margin: 0;
+  padding: 0.5rem 0 0.5rem 1rem;
+  border-left: 2px solid #dee2e6;
+  color: #495057;
+  font-style: italic;
 }
 
-.back-button:hover {
-  background-color: #e0e0e0;
-}
-
-.edit-button {
-  background-color: #4a6cf7;
-  color: white;
-}
-
-.edit-button:hover {
-  background-color: #3a5ce5;
-}
-
-.back-button i, .edit-button i {
-  margin-right: 0.5rem;
-}
-
+/* Loading and error states */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -409,51 +385,98 @@
   margin-bottom: 1rem;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 .error-container {
   text-align: center;
   padding: 3rem 1rem;
 }
 
-.error-message {
-  background-color: #ffebee;
-  color: #c62828;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  display: inline-block;
+.back-button {
+  background-color: #f5f5f5;
+  color: #555;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 1.5rem;
 }
 
+.back-button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
-  .tez-header h1 {
+  .tez-detay-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .tez-detay-header h1 {
     font-size: 1.8rem;
   }
   
-  .tez-meta {
-    gap: 1rem;
+  .duzenle-btn {
+    align-self: flex-end;
   }
   
-  .tez-description, .tez-comments-section {
+  .tez-meta-bilgiler {
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .transkript-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
     padding: 1.5rem;
   }
   
-  .tez-actions {
+  .transkript-actions {
+    width: 100%;
     flex-direction: column;
-    gap: 1rem;
   }
   
-  .back-button, .edit-button {
+  .transkript-btn, 
+  .transkript-toggle-btn, 
+  .transkript-iyilestir-btn {
     width: 100%;
     justify-content: center;
   }
+  
+  .tez-aciklama, 
+  .tez-yorumlar-container {
+    padding: 1.5rem;
+  }
 }
-/* Add these styles to your existing tezdetay.css file */
+/* Additional transcript highlight styles */
+.highlighted-transcript {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #212529;
+}
 
-/* Highlighted comment styles */
+.highlighted-transcript .highlight-direct {
+  background-color: #ffd700;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.highlighted-transcript .highlight-similar {
+  background-color: #90EE90;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.highlighted-transcript .highlight-related {
+  background-color: #ADD8E6;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+/* Comment sentiment highlight styles */
 .highlight-critical {
   background-color: rgba(255, 99, 71, 0.2);
   color: #d32f2f;
@@ -482,152 +505,586 @@
   border-radius: 3px;
 }
 
-/* Transcript styles */
-.tez-transkript-container {
-  margin-top: 2rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
+/* Improved button states */
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed !important;
 }
 
-.transkript-toggle-btn {
-  width: 100%;
-  padding: 12px;
-  background-color: #f5f5f5;
-  border: none;
-  text-align: left;
-  font-weight: 600;
-  cursor: pointer;
+/* Improved transcript status indicators */
+.transkript-status {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.transkript-toggle-btn:hover {
-  background-color: #eeeeee;
-}
-
-.transkript-toggle-btn:after {
-  content: '\f078';
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 900;
-  transition: transform 0.3s ease;
-}
-
-.transkript-toggle-btn.active:after {
-  transform: rotate(180deg);
-}
-
-.tez-transkript {
-  padding: 1.5rem;
-}
-
-.transkript-content {
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 1rem;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  line-height: 1.6;
-}
-
-.transkript-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.save-btn, .regenerate-btn, .retry-btn, .generate-btn {
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  padding: 1rem 2rem;
   font-weight: 500;
 }
 
-.save-btn {
+.transkript-status::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.transkript-tamamlandi::before {
+  background-color: #2e7d32;
+}
+
+.transkript-beklemede::before {
+  background-color: #ff8f00;
+}
+
+.transkript-hata::before {
+  background-color: #c62828;
+}
+
+/* Improved transcript content area */
+.transkript-content {
+  padding: 2rem;
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin: 0 2rem 2rem;
+}
+
+.transkript-content pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  line-height: 1.6;
+  margin: 0;
+  color: #333;
+}
+
+/* Improved form styles */
+.yorum-form textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-height: 120px;
+  resize: vertical;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s;
+}
+
+.yorum-form textarea:focus {
+  outline: none;
+  border-color: #4a6cf7;
+  box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+}
+
+.yorum-form textarea:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Enhanced media container */
+.tez-medya-container {
+  width: 100%;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Improved loading states with animations */
+.loading-container p {
+  color: #666;
+  margin-top: 1rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Button with loading state */
+.button-with-loader {
+  position: relative;
+}
+
+.button-with-loader .spinner-small {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.button-with-loader span {
+  visibility: hidden;
+}
+
+.button-with-loader.loading {
+  color: transparent;
+}
+
+/* Enhanced error container */
+.error-container {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.error-container h2 {
+  color: #c62828;
+  margin-bottom: 1rem;
+}
+
+.error-container p {
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+/* Improved comment section */
+.yorumlar-listesi {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.yorum-item {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.yorum-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Improved meta information display */
+.tez-meta-bilgiler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+}
+
+.tez-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.tez-meta-item i {
+  color: #4a6cf7;
+}
+
+/* Print styles for transcript */
+@media print {
+  .tez-detay-container {
+    padding: 0;
+    max-width: 100%;
+  }
+  
+  .tez-detay-header, 
+  .tez-meta-bilgiler, 
+  .tez-medya-container, 
+  .tez-yorumlar-container,
+  .transkript-actions,
+  .duzenle-btn {
+    display: none;
+  }
+  
+  .tez-aciklama, 
+  .tez-transkript-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .transkript-content {
+    max-height: none;
+    overflow: visible;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .transkript-header h2 {
+    font-size: 18pt;
+    margin-bottom: 1cm;
+  }
+  
+  .transkript-content pre {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+}
+
+/* Additional responsive adjustments */
+@media (max-width: 576px) {
+  .tez-detay-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .tez-meta-bilgiler {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .tez-aciklama, 
+  .tez-yorumlar-container,
+  .transkript-header,
+  .transkript-status,
+  .transkript-content {
+    padding: 1rem;
+  }
+  
+  .transkript-content {
+    margin: 0 1rem 1rem;
+  }
+  
+  .yorum-item {
+    padding: 1rem;
+  }
+  
+  .yorum-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+/* Dark mode support (if your app supports it) */
+@media (prefers-color-scheme: dark) {
+  body.dark-theme .tez-detay-container {
+    color: #e0e0e0;
+  }
+  
+  body.dark-theme .tez-detay-header h1,
+  body.dark-theme .tez-aciklama h2,
+  body.dark-theme .tez-yorumlar-container h2,
+  body.dark-theme .transkript-header h2 {
+    color: #f5f5f5;
+  }
+  
+  body.dark-theme .tez-aciklama,
+  body.dark-theme .tez-yorumlar-container,
+  body.dark-theme .tez-transkript-container,
+  body.dark-theme .yorum-item,
+  body.dark-theme .error-container {
+    background-color: #2d2d2d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  body.dark-theme .tez-meta-bilgiler {
+    background-color: #333;
+  }
+  
+  body.dark-theme .tez-meta-item,
+  body.dark-theme .yorum-icerik,
+  body.dark-theme .tez-aciklama p {
+    color: #ccc;
+  }
+  
+  body.dark-theme .transkript-content {
+    background-color: #333;
+    border-color: #444;
+  }
+  
+  body.dark-theme .transkript-content pre {
+    color: #ddd;
+  }
+  
+  body.dark-theme .yorum-form textarea {
+    background-color: #333;
+    border-color: #444;
+    color: #ddd;
+  }
+  
+  body.dark-theme .yorum-form textarea:focus {
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.4);
+  }
+  
+  body.dark-theme .transkript-toggle-btn {
+    background-color: #333;
+    color: #4a6cf7;
+  }
+  
+  body.dark-theme .transkript-toggle-btn:hover {
+    background-color: #444;
+  }
+  
+  body.dark-theme .transkript-iyilestir-btn {
+    background-color: #333;
+    border-color: #444;
+    color: #ddd;
+  }
+  
+  body.dark-theme .back-button {
+    background-color: #333;
+    color: #ddd;
+  }
+  
+  body.dark-theme .back-button:hover {
+    background-color: #444;
+  }
+  
+  body.dark-theme .no-yorumlar {
+    background-color: #333;
+    color: #aaa;
+  }
+  
+  body.dark-theme .yorum-highlight {
+    background-color: #333;
+    border-left-color: #4a6cf7;
+  }
+  
+  body.dark-theme .yorum-highlight blockquote {
+    border-left-color: #555;
+    color: #bbb;
+  }
+}
+/* Transkript düzenleme stilleri */
+.transkript-duzenle-textarea {
+  width: 100%;
+  min-height: 400px;
+  padding: 1rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  background-color: #fff;
+  color: #333;
+}
+
+.transkript-duzenle-textarea:focus {
+  outline: none;
+  border-color: #4a6cf7;
+  box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+}
+
+.transkript-duzenle-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.transkript-kaydet-btn,
+.transkript-iptal-btn,
+.transkript-duzenle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.transkript-kaydet-btn {
   background-color: #4caf50;
   color: white;
   border: none;
 }
 
-.save-btn:hover {
+.transkript-kaydet-btn:hover {
   background-color: #388e3c;
 }
 
-.regenerate-btn, .retry-btn {
-  background-color: #f5f5f5;
-  color: #333;
-  border: 1px solid #ddd;
+.transkript-iptal-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
 }
 
-.regenerate-btn:hover, .retry-btn:hover {
-  background-color: #e0e0e0;
+.transkript-iptal-btn:hover {
+  background-color: #d32f2f;
 }
 
-.generate-btn {
+.transkript-duzenle-btn {
   background-color: #2196f3;
   color: white;
   border: none;
-  padding: 12px 24px;
-  font-size: 1rem;
 }
 
-.generate-btn:hover {
+.transkript-duzenle-btn:hover {
   background-color: #1976d2;
 }
 
-.transkript-beklemede, .transkript-hata, .transkript-olustur {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  text-align: center;
+.transkript-duzenle-btn i,
+.transkript-kaydet-btn i,
+.transkript-iptal-btn i {
+  font-size: 1rem;
 }
 
-.transkript-beklemede {
-  background-color: #e3f2fd;
-  border: 1px solid #bbdefb;
+/* Düzenleme modu aktifken diğer butonları gizle */
+.transkript-duzenle-actions + .transkript-toggle-btn,
+.transkript-duzenle-actions + .transkript-iyilestir-btn {
+  display: none;
 }
 
-.transkript-hata {
-  background-color: #ffebee;
-  border: 1px solid #ffcdd2;
+/* Düzenleme modu aktifken transkript içeriğinin stilini değiştir */
+.transkript-content.editing {
+  padding: 0;
+  background-color: transparent;
+  border: none;
 }
 
-.transkript-olustur {
-  background-color: #f5f5f5;
-  border: 1px solid #e0e0e0;
+/* Responsive düzenlemeler */
+@media (max-width: 768px) {
+  .transkript-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .transkript-duzenle-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .transkript-kaydet-btn,
+  .transkript-iptal-btn,
+  .transkript-duzenle-btn,
+  .transkript-toggle-btn,
+  .transkript-iyilestir-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
-.transkript-beklemede i {
-  color: #2196f3;
-  font-size: 2rem;
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body.dark-theme .transkript-duzenle-textarea {
+    background-color: #333;
+    color: #ddd;
+    border-color: #444;
+  }
+  
+  body.dark-theme .transkript-duzenle-textarea:focus {
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.4);
+  }
 }
 
-.transkript-hata i {
-  color: #f44336;
-  font-size: 2rem;
+/* Yorum Vurgulama Stilleri */
+.highlight-match {
+  background-color: #fff3cd;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+  display: inline;
 }
 
-.info-text {
-  color: #757575;
-  font-size: 0.9rem;
+.highlight-similar {
+  background-color: #d4edda;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+  display: inline;
 }
 
-.info-text i {
-  color: #2196f3;
-  margin-right: 5px;
+.highlight-context {
+  background-color: #cce5ff;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+  display: inline;
 }
 
-/* Disable button styles */
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+.yorum-highlight {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border-left: 4px solid #007bff;
 }
 
+.yorum-highlight blockquote {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  border-left: 3px solid #6c757d;
+}
+
+/* Karanlık mod desteği */
+@media (prefers-color-scheme: dark) {
+  .highlight-match {
+    background-color: #856404;
+    color: #fff;
+  }
+
+  .highlight-similar {
+    background-color: #155724;
+    color: #fff;
+  }
+
+  .highlight-context {
+    background-color: #004085;
+    color: #fff;
+  }
+
+  .yorum-highlight {
+    background-color: #343a40;
+  }
+
+  .yorum-highlight blockquote {
+    background-color: #2b3035;
+    border-left-color: #495057;
+  }
+}
+
+/* Yorum içeriği için ek stiller */
+.yorum-icerik {
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.yorum-icerik span {
+  display: inline;
+  line-height: inherit;
+}
+
+/* Transkript içeriği için ek stiller */
+.transkript-content pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  line-height: 1.6;
+  margin: 0;
+  color: #333;
+}
+
+.transkript-content pre span {
+  display: inline;
+  line-height: inherit;
+}
+
+/* Karanlık mod için ek stiller */
+@media (prefers-color-scheme: dark) {
+  .yorum-icerik {
+    color: #ddd;
+  }
+
+  .transkript-content pre {
+    color: #ddd;
+  }
+}

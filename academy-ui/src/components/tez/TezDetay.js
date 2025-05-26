@@ -17,6 +17,9 @@ const TezDetay = () => {
   const [transkriptYukleniyor, setTranskriptYukleniyor] = useState(false);
   const [transkriptIyilestiriliyor, setTranskriptIyilestiriliyor] = useState(false);
   const [highlightedComments, setHighlightedComments] = useState({});
+  const [transkriptDuzenlemeModuAktif, setTranskriptDuzenlemeModuAktif] = useState(false);
+  const [duzenlenecekTranskript, setDuzenlenecekTranskript] = useState('');
+  const [transkriptKaydediliyor, setTranskriptKaydediliyor] = useState(false);
   
   const navigate = useNavigate();
   const { currentUser, userDetails } = useAuth();
@@ -60,24 +63,72 @@ const TezDetay = () => {
     return () => unsubscribe();
   }, [tezId]);
 
-  // Yorumları işle ve highlight et
-  const processComments = async (yorumlar) => {
-    const newHighlightedComments = { ...highlightedComments };
-    
-    for (const yorum of yorumlar) {
-      // Eğer bu yorum daha önce işlenmediyse
-      if (!newHighlightedComments[yorum.id] && tez?.transkript) {
-        try {
-          const highlighted = await highlightComment(tez.transkript, yorum.yorum);
-          newHighlightedComments[yorum.id] = highlighted;
-        } catch (err) {
-          console.error('Yorum işlenirken hata oluştu:', err);
-          newHighlightedComments[yorum.id] = null; // Hata durumunda null olarak işaretle
-        }
-      }
+  // Transkript düzenleme modunu aç
+  const handleTranskriptDuzenle = () => {
+    if (!tez || !tez.transkript) {
+      alert('Düzenlenecek transkript bulunamadı.');
+      return;
     }
     
-    setHighlightedComments(newHighlightedComments);
+    setDuzenlenecekTranskript(tez.transkript);
+    setTranskriptDuzenlemeModuAktif(true);
+    setTranskriptGosteriliyor(true);
+  };
+
+  // Düzenlenen transkripti kaydet
+  const handleTranskriptKaydet = async () => {
+    if (!duzenlenecekTranskript.trim()) {
+      alert('Transkript boş olamaz.');
+      return;
+    }
+
+    try {
+      setTranskriptKaydediliyor(true);
+      
+      // Firestore'da tez belgesini güncelle
+      const tezRef = doc(db, 'tezler', tezId);
+      await updateDoc(tezRef, {
+        transkript: duzenlenecekTranskript,
+        sonGuncelleme: new Date()
+      });
+      
+      setTranskriptDuzenlemeModuAktif(false);
+      alert('Transkript başarıyla güncellendi!');
+    } catch (err) {
+      console.error('Transkript kaydedilirken hata oluştu:', err);
+      alert('Transkript kaydedilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+    } finally {
+      setTranskriptKaydediliyor(false);
+    }
+  };
+
+  // Düzenleme modundan çık
+  const handleTranskriptDuzenlemeyiIptalEt = () => {
+    setTranskriptDuzenlemeModuAktif(false);
+    setDuzenlenecekTranskript('');
+  };
+
+  // Yorumları işle ve highlight et
+  const processComments = async (yorumlar) => {
+    try {
+      const newHighlightedComments = { ...highlightedComments };
+
+      for (const yorum of yorumlar) {
+        if (!newHighlightedComments[yorum.id]) {
+          try {
+            const highlighted = await highlightComment(yorum.yorum);
+            newHighlightedComments[yorum.id] = highlighted;
+          } catch (error) {
+            console.error(`Yorum işleme hatası (ID: ${yorum.id}):`, error);
+            newHighlightedComments[yorum.id] = null;
+          }
+        }
+      }
+
+      setHighlightedComments(newHighlightedComments);
+    } catch (error) {
+      console.error("Yorum işleme hatası:", error);
+    }
   };
 
   const handleYorumSubmit = async (e) => {
@@ -282,7 +333,7 @@ const TezDetay = () => {
       <div className="error-container">
         <h2>Tez Bulunamadı</h2>
         <p>Aradığınız tez bulunamadı veya silinmiş olabilir.</p>
-        <button onClick={() => navigate('/tezler')} className="back-button">
+                <button onClick={() => navigate('/tezler')} className="back-button">
           Tez Listesine Dön
         </button>
       </div>
@@ -321,8 +372,8 @@ const TezDetay = () => {
         </div>
         <div className="tez-meta-item tez-type">
           <span className={`tez-type-badge tez-type-${tez.sunum}`}>
-            {tez.sunum === 'tez_savunma' ? 'Tez Savunma' : 
-             tez.sunum === 'tez_oneri' ? 'Tez Öneri' : tez.sunum}
+            {tez.sunum === 'tez_savunma' ? 'Tez Savunma' :
+              tez.sunum === 'tez_oneri' ? 'Tez Öneri' : tez.sunum}
           </span>
         </div>
       </div>
@@ -330,8 +381,8 @@ const TezDetay = () => {
       <div className="tez-medya-container">
         {getEmbedCode()}
       </div>
-
-            <div className="tez-aciklama">
+      
+      <div className="tez-aciklama">
         <h2>Tez Açıklaması</h2>
         <p>{tez.aciklama}</p>
       </div>
@@ -345,7 +396,7 @@ const TezDetay = () => {
               // Sadece akademisyenler ve tezi yükleyen kişi transkript oluşturabilir
               currentUser && (userDetails?.userType === 'academic' || currentUser.uid === tez.yukleyenId) && (
                 <button 
-                  onClick={handleTranskriptOlustur} 
+                  onClick={handleTranskriptOlustur}
                   className="transkript-btn"
                   disabled={transkriptYukleniyor}
                 >
@@ -364,42 +415,88 @@ const TezDetay = () => {
               )
             ) : (
               <>
-                <button 
-                  onClick={() => setTranskriptGosteriliyor(!transkriptGosteriliyor)} 
-                  className="transkript-toggle-btn"
-                >
-                  {transkriptGosteriliyor ? (
-                    <>
-                      <i className="fas fa-eye-slash"></i>
-                      <span>Transkripti Gizle</span>
-                    </>
-                  ) : (
-                    <>
-                      <i className="fas fa-eye"></i>
-                      <span>Transkripti Göster</span>
-                    </>
-                  )}
-                </button>
-                
-                {/* Sadece akademisyenler ve tezi yükleyen kişi transkripti iyileştirebilir */}
-                {currentUser && (userDetails?.userType === 'academic' || currentUser.uid === tez.yukleyenId) && (
-                  <button 
-                    onClick={handleTranskriptIyilestir} 
-                    className="transkript-iyilestir-btn"
-                    disabled={transkriptIyilestiriliyor}
-                  >
-                    {transkriptIyilestiriliyor ? (
+                {!transkriptDuzenlemeModuAktif && (
+                  <>
+                    <button 
+                      onClick={() => setTranskriptGosteriliyor(!transkriptGosteriliyor)}
+                      className="transkript-toggle-btn"
+                    >
+                      {transkriptGosteriliyor ? (
+                        <>
+                          <i className="fas fa-eye-slash"></i>
+                          <span>Transkripti Gizle</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-eye"></i>
+                          <span>Transkripti Göster</span>
+                        </>
+                      )}
+                    </button>
+                    
+                    {/* Sadece akademisyenler ve tezi yükleyen kişi transkripti düzenleyebilir */}
+                    {currentUser && (userDetails?.userType === 'academic' || currentUser.uid === tez.yukleyenId) && (
                       <>
-                        <div className="spinner-small"></div>
-                        <span>İyileştiriliyor...</span>
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-magic"></i>
-                        <span>Transkripti İyileştir</span>
+                        <button 
+                          onClick={handleTranskriptDuzenle}
+                          className="transkript-duzenle-btn"
+                        >
+                          <i className="fas fa-edit"></i>
+                          <span>Transkripti Düzenle</span>
+                        </button>
+                        
+                        <button 
+                          onClick={handleTranskriptIyilestir}
+                          className="transkript-iyilestir-btn"
+                          disabled={transkriptIyilestiriliyor}
+                        >
+                          {transkriptIyilestiriliyor ? (
+                            <>
+                              <div className="spinner-small"></div>
+                              <span>İyileştiriliyor...</span>
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-magic"></i>
+                              <span>Transkripti İyileştir</span>
+                            </>
+                          )}
+                        </button>
                       </>
                     )}
-                  </button>
+                  </>
+                )}
+                
+                {/* Düzenleme modu aktifse kaydet ve iptal butonlarını göster */}
+                {transkriptDuzenlemeModuAktif && (
+                  <div className="transkript-duzenle-actions">
+                    <button 
+                      onClick={handleTranskriptKaydet}
+                      className="transkript-kaydet-btn"
+                      disabled={transkriptKaydediliyor}
+                    >
+                      {transkriptKaydediliyor ? (
+                        <>
+                          <div className="spinner-small"></div>
+                          <span>Kaydediliyor...</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-save"></i>
+                          <span>Değişiklikleri Kaydet</span>
+                        </>
+                      )}
+                    </button>
+                    
+                    <button 
+                      onClick={handleTranskriptDuzenlemeyiIptalEt}
+                      className="transkript-iptal-btn"
+                      disabled={transkriptKaydediliyor}
+                    >
+                      <i className="fas fa-times"></i>
+                      <span>İptal</span>
+                    </button>
+                  </div>
                 )}
               </>
             )}
@@ -408,15 +505,25 @@ const TezDetay = () => {
         
         {/* Transkript durumunu göster */}
         <div className={`transkript-status transkript-${tez.transkriptDurumu}`}>
-          {tez.transkriptDurumu === 'tamamlandi' ? 'Transkript Hazır' : 
-           tez.transkriptDurumu === 'beklemede' ? 'Transkript Hazırlanıyor' : 
-           'Transkript Oluşturulurken Hata Oluştu'}
+          {tez.transkriptDurumu === 'tamamlandi' ? 'Transkript Hazır' :
+            tez.transkriptDurumu === 'beklemede' ? 'Transkript Hazırlanıyor' :
+            'Transkript Oluşturulurken Hata Oluştu'}
         </div>
         
         {/* Transkript içeriği */}
         {transkriptGosteriliyor && tez.transkript && (
           <div className="transkript-content">
-            <pre>{tez.transkript}</pre>
+            {transkriptDuzenlemeModuAktif ? (
+              <textarea
+                className="transkript-duzenle-textarea"
+                value={duzenlenecekTranskript}
+                onChange={(e) => setDuzenlenecekTranskript(e.target.value)}
+                rows={20}
+                placeholder="Transkript içeriğini düzenleyin..."
+              />
+            ) : (
+              <pre>{tez.transkript}</pre>
+            )}
           </div>
         )}
       </div>
@@ -465,7 +572,7 @@ const TezDetay = () => {
                 {tez.transkript && highlightedComments[yorum.id] && (
                   <div className="yorum-highlight">
                     <h4>Transkriptten İlgili Bölüm:</h4>
-                    <blockquote>{highlightedComments[yorum.id]}</blockquote>
+                    <blockquote dangerouslySetInnerHTML={{ __html: highlightedComments[yorum.id] }}></blockquote>
                   </div>
                 )}
               </div>

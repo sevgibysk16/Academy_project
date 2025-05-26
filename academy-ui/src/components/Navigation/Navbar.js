@@ -93,8 +93,10 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Ana Sayfa', icon: 'fa-home' },
     { path: '/community', label: 'Topluluk', icon: 'fa-users' },
+    { path: '/projects', label: 'Projeler', icon: 'fa-project-diagram' },
     { path: '/tezler', label: 'Tez Sunumları', icon: 'fa-chalkboard-teacher' },
-    { path: '/about', label: 'Hakkımızda', icon: 'fa-info-circle' }
+    { path: '/transcripts', label: 'Seminer Sonuçları', icon: 'fa-info-circle' },
+    { path: '/blog', label: 'Blog', icon: 'fa-blog' }
   ];
 
   return (
@@ -111,7 +113,7 @@ const Navbar = () => {
         </Link>
         
         <button 
-          className="navbar-toggle" 
+          className="navbar-toggle"
           onClick={toggleMobileMenu}
           aria-expanded={mobileMenuOpen}
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
@@ -150,7 +152,6 @@ const Navbar = () => {
                   </span>
                   <i className={`fas fa-chevron-${dropdownOpen ? 'up' : 'down'}`}></i>
                 </button>
-
                 {dropdownOpen && (
                   <div className="dropdown-content" role="menu">
                     <Link to="/dashboard" onClick={() => setDropdownOpen(false)} role="menuitem">

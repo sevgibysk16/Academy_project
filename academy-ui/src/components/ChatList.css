@@ -8,6 +8,8 @@
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 100;
 }
 
 .chat-list-header {
@@ -16,6 +18,13 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
+  background: #fff;
+  position: relative;
+  z-index: 1002;
+  margin-top: 0;
+  width: 100%;
+  height: 60px;
+  flex-shrink: 0;
 }
 
 .chat-list-header h3 {
@@ -33,13 +42,19 @@
   cursor: pointer;
   color: #555;
   padding: 5px;
+  display: none;
 }
 
 .chat-list-content {
   padding: 15px;
   overflow-y: auto;
   flex: 1;
-  display: block; /* Görünür olmasını sağla */
+  display: block;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+  background: #f8f9fa;
+  margin-top: 10px;
 }
 
 .chat-list-content.hidden {
@@ -54,6 +69,7 @@
   border-bottom: 2px solid #e6e6e6;
   font-weight: 600;
   letter-spacing: 0.5px;
+  margin-top: 20px;
 }
 
 .chat-list ul {
@@ -101,9 +117,13 @@
   border-radius: 4px 0 0 4px;
 }
 
-/* Arama kutusu için stil */
 .search-container {
   margin-bottom: 15px;
+  position: sticky;
+  top: 70px;
+  z-index: 2;
+  background: #f8f9fa;
+  padding: 5px 0;
 }
 
 .search-container input {
@@ -127,7 +147,6 @@
   color: #aaa;
 }
 
-/* Kullanıcı avatar stili */
 .chat-list li .avatar {
   width: 32px;
   height: 32px;
@@ -150,7 +169,6 @@
   flex: 1;
 }
 
-/* Okunmamış mesaj göstergesi (opsiyonel) */
 .chat-list li .unread-badge {
   width: 8px;
   height: 8px;
@@ -160,7 +178,6 @@
   flex-shrink: 0;
 }
 
-/* Boş durum stili */
 .chat-list .empty-list {
   color: #999;
   text-align: center;
@@ -169,13 +186,11 @@
   font-size: 14px;
 }
 
-/* Kullanıcılar listesi için özel stil */
 .users-list {
   max-height: 300px;
   overflow-y: auto;
 }
 
-/* Seminar section styles */
 .seminar-section {
   margin-bottom: 20px;
 }
@@ -256,78 +271,669 @@
   background-color: #0255b8;
 }
 
+/* Mobil menü toggle butonu */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  left: 15px;
+  bottom: 20px;
+  z-index: 1001;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  width: 45px;
+  height: 45px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ok şekli için CSS */
+.mobile-menu-toggle::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 8px solid #333;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.mobile-menu-toggle span {
+  display: none; /* Span'ları gizle */
+}
+
+.mobile-menu-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-menu-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Mobil menü için overlay */
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e6e6e6;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.section-header .toggle-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #555;
+  padding: 5px;
+  transition: all 0.3s ease;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.section-header .toggle-button:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.1);
+}
+
+.section-header .toggle-button:active {
+  transform: scale(0.95);
+}
+
 /* Responsive tasarım için */
 @media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
   .chat-list {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    background: #fff;
+    z-index: 1000;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+    padding-top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-list.active {
+    left: 0;
+  }
+
+  .toggle-button {
+    display: block;
+  }
+
+  .mobile-menu-overlay {
+    display: block;
+    z-index: 999;
+  }
+
+  .chat-list-header {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    padding: 20px 15px;
+    margin-top: 0;
     width: 100%;
-    height: auto;
-    border-right: none;
+    flex-shrink: 0;
+    height: 60px;
     border-bottom: 1px solid #e0e0e0;
   }
-  
-  .chat-list.collapsed {
-    min-height: 60px;
+
+  .chat-list-header .toggle-button {
+    display: block;
+    margin-left: auto;
+    font-size: 18px;
+    padding: 8px;
   }
-  
+
+  .chat-list-content {
+    padding: 15px;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 0;
+  }
+
+  .chat-list h3 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+  }
+
+  .chat-list li {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+
+  .search-container {
+    top: 60px;
+  }
+
+  .search-container input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .users-list {
+    max-height: 250px;
+  }
+
+  .seminar-button {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+
+  .active-seminar-item {
+    padding: 10px !important;
+  }
+
+  .join-seminar-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .chat-list {
+    width: 260px;
+  }
+
+  .mobile-menu-toggle {
+    width: 40px;
+    height: 40px;
+    left: 10px;
+    bottom: 15px;
+  }
+
+  .mobile-menu-toggle span {
+    width: 18px;
+  }
+
+  .chat-list-header h3 {
+    font-size: 16px;
+  }
+
+  .chat-list h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+  }
+
   .chat-list li {
     padding: 10px 12px;
     font-size: 13px;
   }
-  
+
+  .chat-list li .avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .search-container {
+    margin-bottom: 10px;
+  }
+
   .search-container input {
     padding: 8px 10px;
     font-size: 13px;
   }
-  
-  .users-list {
-    max-height: 200px;
+
+  .active-seminars h4 {
+    font-size: 14px;
   }
-  
-  .seminar-button {
-    padding: 10px;
+
+  .seminar-title {
     font-size: 13px;
   }
-  
+  .seminar-button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
   .active-seminar-item {
     padding: 8px !important;
   }
-  
+
   .join-seminar-button {
     padding: 4px 8px;
     font-size: 11px;
   }
 }
 
-@media (max-width: 576px) {
+/* Dokunmatik cihazlar için iyileştirmeler */
+@media (hover: none) {
+  .chat-list li:hover {
+    transform: none;
+    background-color: transparent;
+  }
+
+  .chat-list li:active {
+    background-color: #eef2f7;
+    transform: translateX(2px);
+  }
+
+  .seminar-button:hover {
+    transform: none;
+    background-color: #0366d6;
+  }
+
+  .seminar-button:active {
+    background-color: #0255b8;
+    transform: translateY(0);
+  }
+
+  .join-seminar-button:hover {
+    background-color: #0366d6;
+  }
+
+  .join-seminar-button:active {
+    background-color: #0255b8;
+  }
+
+  .mobile-menu-toggle:hover {
+    transform: none;
+  }
+
+  .mobile-menu-toggle:active {
+    transform: scale(0.95);
+    background-color: #f0f0f0;
+  }
+}
+
+/* Karanlık mod desteği */
+@media (prefers-color-scheme: dark) {
+  .chat-list {
+    background-color: #1a1a1a;
+    border-color: #333;
+  }
+
+  .chat-list-header {
+    background-color: #1a1a1a;
+    border-color: #333;
+  }
+
+  .chat-list-header h3 {
+    color: #e0e0e0;
+  }
+
+  .toggle-button {
+    color: #e0e0e0;
+  }
+
+  .chat-list h3 {
+    color: #e0e0e0;
+    border-color: #333;
+  }
+
+  .chat-list li {
+    color: #e0e0e0;
+  }
+
+  .chat-list li:hover {
+    background-color: #2d2d2d;
+  }
+
+  .chat-list li.selected {
+    background-color: #1a237e;
+    color: #e3f2fd;
+  }
+
+  .chat-list li.selected::before {
+    background-color: #1a73e8;
+  }
+
+  .search-container {
+    background-color: #1a1a1a;
+  }
+
+  .search-container input {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #e0e0e0;
+  }
+
+  .search-container input::placeholder {
+    color: #666;
+  }
+
+  .chat-list li .avatar {
+    background-color: #404040;
+    color: #e0e0e0;
+  }
+
+  .chat-list .empty-list {
+    color: #666;
+  }
+
+  .active-seminars {
+    background-color: #1a237e;
+  }
+
+  .active-seminars h4 {
+    color: #e3f2fd;
+  }
+
+  .active-seminar-item {
+    background-color: #2d2d2d !important;
+  }
+
+  .seminar-title {
+    color: #e0e0e0;
+  }
+
+  .mobile-menu-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  .mobile-menu-toggle {
+    background: #2d2d2d;
+    border-color: #404040;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .mobile-menu-toggle span {
+    background: #e0e0e0;
+  }
+
+  .mobile-menu-toggle:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .section-header {
+    border-bottom-color: #333;
+  }
+
+  .section-header h3 {
+    color: #e0e0e0;
+  }
+
+  .section-header .toggle-button {
+    color: #e0e0e0;
+  }
+
+  .section-header .toggle-button:hover {
+    background-color: #2d2d2d;
+  }
+}
+
+/* Debug toggle button */
+.debug-toggle-button {
+  padding: 5px;
+  margin: 5px 0;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.debug-toggle-button:hover {
+  background: #e0e0e0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .debug-toggle-button {
+    background: #2d2d2d;
+    border-color: #404040;
+    color: #e0e0e0;
+  }
+
+  .debug-toggle-button:hover {
+    background: #404040;
+  }
+}
+
+/* Animasyonlar */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.chat-list.opening {
+  animation: slideIn 0.3s ease-out;
+}
+
+.chat-list.closing {
+  animation: slideOut 0.3s ease-out;
+}
+
+/* Yüksek çözünürlük ekranlar için */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .mobile-menu-toggle {
+    border-width: 0.5px;
+  }
+
+  .mobile-menu-toggle span {
+    height: 1.5px;
+  }
+
+  .chat-list {
+    border-right-width: 0.5px;
+  }
+
+  .chat-list-header {
+    border-bottom-width: 0.5px;
+  }
+}
+
+/* Erişilebilirlik iyileştirmeleri */
+@media (prefers-reduced-motion: reduce) {
+  .chat-list,
+  .mobile-menu-toggle,
+  .mobile-menu-overlay,
+  .chat-list li,
+  .seminar-button,
+  .join-seminar-button,
+  .section-header .toggle-button {
+    transition: none;
+  }
+
+  .chat-list.opening,
+  .chat-list.closing {
+    animation: none;
+  }
+
+  .chat-list li:hover,
+  .seminar-button:hover,
+  .mobile-menu-toggle:hover {
+    transform: none;
+  }
+}
+
+/* Focus states for accessibility */
+.mobile-menu-toggle:focus,
+.chat-list li:focus,
+.seminar-button:focus,
+.join-seminar-button:focus,
+.search-container input:focus,
+.section-header .toggle-button:focus {
+  outline: 2px solid #0366d6;
+  outline-offset: 2px;
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .chat-list {
+    width: 250px;
+  }
+
+  .chat-list-header {
+    padding: 15px;
+    height: 50px;
+  }
+
   .chat-list-header h3 {
     font-size: 16px;
   }
-  
-  .chat-list h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
+
+  .mobile-menu-toggle {
+    width: 35px;
+    height: 35px;
+    top: 10px;
+    left: 10px;
   }
-  
+
+  .mobile-menu-toggle span {
+    width: 16px;
+    height: 1.5px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .chat-list {
+    width: 240px;
+  }
+
+  .mobile-menu-toggle {
+    width: 35px;
+    height: 35px;
+    left: 8px;
+    top: 12px;
+  }
+
+  .mobile-menu-toggle span {
+    width: 16px;
+  }
+
+  .chat-list-header {
+    padding: 15px 10px;
+  }
+
+  .chat-list-content {
+    padding: 10px;
+  }
+
   .chat-list li {
     padding: 8px 10px;
-  }
-  
-  .chat-list li .avatar {
-    width: 28px;
-    height: 28px;
     font-size: 12px;
   }
-  
-  .search-container {
+
+  .search-container input {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+/* 480px ve altı için (küçük mobil cihazlar) */
+@media (max-width: 480px) {
+  .chat-list {
+    width: 100vw;
+    left: -100vw;
+    border-radius: 0;
+    font-size: 13px;
+  }
+  .chat-list.active {
+    left: 0;
+  }
+  .chat-list-header {
+    padding: 12px 8px;
+    height: 48px;
+  }
+  .chat-list-header h3 {
+    font-size: 15px;
+  }
+  .chat-list li {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .chat-list li .avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+  .search-container input {
+    padding: 8px 8px;
+    font-size: 12px;
+  }
+  .seminar-button,
+  .join-seminar-button {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 13px;
     margin-bottom: 10px;
   }
-  
-  .active-seminars h4 {
-    font-size: 14px;
+  .active-seminar-item {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 4px;
+    padding: 8px !important;
   }
-  
-  .seminar-title {
-    font-size: 13px;
+  /* Scrollbar gizle */
+  .chat-list {
+    scrollbar-width: none;
+  }
+  .chat-list::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 360px ve altı için (çok küçük ekranlar) */
+@media (max-width: 360px) {
+  .chat-list {
+    font-size: 11px;
+  }
+  .chat-list-header h3,
+  .chat-list h3 {
+    font-size: 13px;
   }
 }

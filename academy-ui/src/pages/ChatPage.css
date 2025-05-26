@@ -1,110 +1,317 @@
-/* Temel reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  height: 100%;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-}
-
-/* Header için stil (kendi header stilinize göre ayarlayın) */
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px; /* Header yüksekliğinize göre ayarlayın */
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-}
-
-/* Ana içerik konteyneri */
-.container, .main-content {
-  padding-top: 70px; /* Header yüksekliği + ekstra boşluk */
-  width: 100%;
-  max-width: 1240px;
-  margin: 0 auto;
-  min-height: 100vh;
-}
-
-/* Chat sayfası */
 .chat-page {
-  display: flex;
-  height: calc(100vh - 80px); /* Header yüksekliği + padding'ler */
-  border: none;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin: 10px auto;
-  max-width: 1200px;
-  background-color: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-}
-
-.chat-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
-  background-color: #f9f9f9;
-  transition: all 0.3s ease;
-}
-
-.chat-section:hover {
-  background-color: #f5f5f5;
-}
-
-.no-user-text {
-  margin: auto;
-  color: #757575;
-  font-size: 16px;
-  text-align: center;
-  padding: 30px;
-  border-radius: 6px;
-  background-color: rgba(0, 0, 0, 0.02);
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
-}
-
-/* Topluluk Üyeleri başlığının altındaki arama kısmı */
-.group-header {
-  margin-bottom: 10px; /* Başlık ile arama kutusu arasında boşluk bırak */
-}
-
-.search-container {
-  width: 100%;
-  margin-bottom: 15px; /* Arama kutusu ile kullanıcı listesi arasında boşluk bırak */
-  padding: 0 10px;
-}
-
-.search-container input {
-  width: 100%;
-  padding: 8px 12px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-  transition: border 0.3s ease;
-}
-
-.search-container input:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-/* Medya sorguları */
-@media (max-width: 768px) {
-  .chat-page {
-    height: calc(100vh - 100px);
-    margin: 5px;
+    display: flex;
+    height: 100vh;
+    background-color: #f5f5f5;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-top: 40px;
   }
-  .container, .main-content {
-    padding-top: 65px;
+  
+  .chat-page.mobile {
+    padding-top: 0;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
   }
-}
+  
+  .chat-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    margin-top: 40px;
+    height: calc(100vh - 80px);
+  }
+  
+  .chat-page.mobile .chat-section {
+    height: calc(100% - 80px);
+    margin-top: 0;
+    padding-bottom: 80px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .seminar-banner {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  
+  .seminar-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    opacity: 0.1;
+  }
+  
+  .seminar-banner h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+  }
+  
+  .seminar-banner button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .start-seminar-button {
+    background-color: #fff;
+    color: #1a73e8;
+  }
+  
+  .start-seminar-button:hover,
+  .start-seminar-button:active {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .join-seminar-button {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(5px);
+  }
+  
+  .join-seminar-button:hover,
+  .join-seminar-button:active {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .no-user-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #666;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    position: relative;
+  }
+  
+  .no-user-text::before {
+    content: '💬';
+    font-size: 3rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.1;
+  }
+  
+  /* Mobil görünüm için medya sorguları */
+  @media (max-width: 768px) {
+    .chat-page {
+      padding-top: 10px;
+      flex-direction: column;
+    }
+  
+    .chat-section {
+      height: calc(100vh - 90px);
+      margin-top: 10px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  
+    .seminar-banner {
+      padding: 12px;
+      gap: 10px;
+    }
+  
+    .seminar-banner h3 {
+      font-size: 1.1rem;
+    }
+  
+    .seminar-banner button {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      width: 100%;
+      max-width: 280px;
+    }
+  
+    .no-user-text {
+      font-size: 1rem;
+      padding: 15px;
+    }
+  
+    .no-user-text::before {
+      font-size: 2rem;
+    }
+  }
+  
+  /* iPhone özel düzenlemeler */
+  @supports (-webkit-touch-callout: none) {
+    .chat-page.mobile {
+      height: 100%;
+      height: -webkit-fill-available;
+    }
+  
+    .chat-page.mobile .chat-section {
+      height: calc(100% - 80px);
+      height: calc(-webkit-fill-available - 80px);
+      padding-bottom: env(safe-area-inset-bottom, 80px);
+    }
+  
+    .seminar-banner button {
+      padding: 14px 24px;
+      font-size: 1rem;
+    }
+  }
+  
+  /* Küçük mobil cihazlar için ek düzenlemeler */
+  @media (max-width: 480px) {
+    .chat-page {
+      padding-top: 5px;
+    }
+  
+    .chat-section {
+      height: calc(100vh - 85px);
+      margin-top: 5px;
+    }
+  
+    .seminar-banner {
+      padding: 8px;
+    }
+  
+    .seminar-banner h3 {
+      font-size: 1rem;
+    }
+  
+      .seminar-banner button {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+  }
+  
+  /* Yatay mod düzenlemeleri */
+  @media (max-width: 768px) and (orientation: landscape) {
+    .chat-page.mobile {
+      padding-top: 0;
+    }
+  
+    .chat-page.mobile .chat-section {
+      height: calc(100% - 60px);
+      padding-bottom: 60px;
+    }
+  
+    .seminar-banner {
+      padding: 8px 16px;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+    .seminar-banner h3 {
+      font-size: 1rem;
+      margin: 0;
+    }
+  
+    .seminar-banner button {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      width: auto;
+      min-width: 160px;
+    }
+  }
+  
+  /* Karanlık mod desteği */
+  @media (prefers-color-scheme: dark) {
+    .chat-page {
+      background-color: #1a1a1a;
+    }
+  
+    .chat-section {
+      background-color: #2d2d2d;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    }
+  
+    .no-user-text {
+      color: #ccc;
+      background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+    }
+  }
+  
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .chat-section,
+    .seminar-banner button {
+      transition: none;
+    }
+  
+    .seminar-banner button:hover,
+    .seminar-banner button:active {
+      transform: none;
+    }
+  }
+  
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .seminar-banner {
+      background: #000;
+      color: #fff;
+    }
+  
+    .start-seminar-button {
+      background-color: #fff;
+      color: #000;
+      border: 2px solid #000;
+    }
+  
+    .join-seminar-button {
+      background-color: #000;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+  }
+  
+  
+     
+  

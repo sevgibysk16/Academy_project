@@ -38,16 +38,53 @@ const ChatPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentUserInfo, setCurrentUserInfo] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobil cihaz kontrolü
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = window.innerWidth <= 768;
+      setIsMobile(isMobileDevice);
+      
+      // iOS için viewport düzeltmesi
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        if (isMobileDevice) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+        } else {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        }
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Viewport meta tag kontrolü ve düzeltmesi
+  useEffect(() => {
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+      const newViewport = document.createElement('meta');
+      newViewport.name = 'viewport';
+      newViewport.content = isMobile 
+        ? 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
+        : 'width=device-width, initial-scale=1.0';
+      document.head.appendChild(newViewport);
+    }
+  }, [isMobile]);
 
   // Mevcut kullanıcının bilgilerini getir
   useEffect(() => {
     const fetchCurrentUserInfo = async () => {
       if (!currentUser) return;
-            
+                      
       try {
         const userRef = doc(db, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
-                
+                              
         if (userSnap.exists()) {
           const userData = userSnap.data();
           setCurrentUserInfo({
@@ -56,49 +93,54 @@ const ChatPage = () => {
             lastName: userData.last_name || '',
             fullName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim()
           });
-          
-          // Admin durumunu kontrol et
+                            
           setIsAdmin(userData.isAdmin || false);
         }
       } catch (error) {
         console.error('Kullanıcı bilgileri getirilirken hata oluştu:', error);
       }
     };
+
     fetchCurrentUserInfo();
   }, [currentUser, db]);
 
   // Kullanıcıları getir
   useEffect(() => {
     const fetchUsers = async () => {
-            const q = query(collection(db, 'users'), where('community_member', '==', true));
+      const q = query(collection(db, 'users'), where('community_member', '==', true));
       const snapshot = await getDocs(q);
       const userList = [];
+          
       snapshot.forEach(doc => {
         if (doc.id !== currentUser.uid) {
           const userData = doc.data();
           userList.push({
-             uid: doc.id,
-             ...userData,
+            uid: doc.id,
+            ...userData,
             firstName: userData.first_name || '',
             lastName: userData.last_name || '',
             fullName: `${userData.first_name || ''} ${userData.last_name || ''}`.trim()
           });
         }
       });
+          
       setUsers(userList);
       setFilteredUsers(userList);
     };
+
     if (currentUser) fetchUsers();
   }, [currentUser, db]);
 
   // Sabit grup verisi
   useEffect(() => {
     if (!currentUser) return;
+      
     const defaultGroup = {
       id: 'intellica_group',
       name: 'İntellica Seminer Grubu',
       members: [currentUser.uid]
     };
+      
     setGroups([defaultGroup]);
   }, [currentUser]);
 
@@ -106,6 +148,7 @@ const ChatPage = () => {
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
+      
     if (!query) {
       setFilteredUsers(users);
     } else {
@@ -119,22 +162,27 @@ const ChatPage = () => {
   // Socket bağlantısı
   useEffect(() => {
     if (!currentUser) return;
+
     connectSocket(currentUser.uid);
+
     onMessageReceived((received) => {
       const isPrivate =
         selectedUser && (received.from === selectedUser.uid || received.to === selectedUser.uid);
       const isGroup =
         selectedGroup && received.groupId === selectedGroup.id;
+
       if (isPrivate || isGroup) {
         setMessages(prev => [...prev, received]);
       }
     });
+
     onTypingReceived(({ roomId, senderId }) => {
       if (senderId === selectedUser?.uid) {
         setTypingUser(senderId);
         setTimeout(() => setTypingUser(null), 3000);
       }
     });
+
     return () => {
       disconnectSocket();
     };
@@ -144,6 +192,7 @@ const ChatPage = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       if (!currentUser) return;
+
       let q;
       if (selectedUser) {
         const roomId = [currentUser.uid, selectedUser.uid].sort().join('_');
@@ -153,21 +202,20 @@ const ChatPage = () => {
       } else {
         return;
       }
-            
+                      
       const snapshot = await getDocs(q);
       const messagesData = [];
-            
+                      
       for (const docSnap of snapshot.docs) {
         const data = docSnap.data();
         let senderInfo = null;
-                
-        // Gönderenin bilgilerini getir
+                              
         if (data.senderId === currentUser.uid) {
           senderInfo = currentUserInfo;
         } else {
           const senderRef = doc(db, 'users', data.senderId);
           const senderSnap = await getDoc(senderRef);
-                    
+                                      
           if (senderSnap.exists()) {
             const senderData = senderSnap.data();
             senderInfo = {
@@ -178,7 +226,7 @@ const ChatPage = () => {
             };
           }
         }
-                
+                              
         messagesData.push({
           from: data.senderId,
           to: data.groupId || data.receiverId,
@@ -187,17 +235,18 @@ const ChatPage = () => {
           senderInfo: senderInfo
         });
       }
-            
+                      
       messagesData.sort((a, b) => a.timestamp - b.timestamp);
       setMessages(messagesData);
     };
+
     fetchMessages();
   }, [currentUser, selectedUser, selectedGroup, currentUserInfo, db]);
 
   // Mesaj gönder
   const handleSendMessage = async (text) => {
     if (!text.trim() || !currentUserInfo) return;
-        
+              
     let newMessage;
     if (selectedUser) {
       const roomId = [currentUser.uid, selectedUser.uid].sort().join('_');
@@ -222,11 +271,13 @@ const ChatPage = () => {
     } else {
       return;
     }
+
     try {
       await addDoc(collection(db, 'messages'), newMessage);
     } catch (err) {
       console.error('Mesaj veritabanına kaydedilemedi:', err);
     }
+
     setMessages(prev => [
       ...prev,
       {
@@ -237,7 +288,7 @@ const ChatPage = () => {
         senderInfo: currentUserInfo
       }
     ]);
-        
+              
     sendMessage(newMessage);
   };
 
@@ -247,13 +298,34 @@ const ChatPage = () => {
     sendTyping(roomId, currentUser.uid);
   };
 
-  // Seminer sayfasına yönlendirme
-  const handleStartSeminar = () => {
+  // Seminer oluşturma sayfasına yönlendirme (Admin için)
+  const handleStartSeminar = (e) => {
+    e.preventDefault(); // Buton tıklama olayını engelle
+    if (isAdmin) {
+      navigate('/seminar/create');
+    } else {
+      navigate('/seminar');
+    }
+  };
+
+  // Seminere katılma sayfasına yönlendirme
+  const handleJoinSeminar = (e) => {
+    e.preventDefault(); // Buton tıklama olayını engelle
     navigate('/seminar');
   };
 
   return (
-    <div className="chat-page">
+    <div 
+      className={`chat-page ${isMobile ? 'mobile' : ''}`}
+      style={{ 
+        height: isMobile ? '100%' : '100vh',
+        position: isMobile ? 'fixed' : 'relative',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+      }}
+    >
       <ChatList
         users={filteredUsers}
         groups={groups}
@@ -269,22 +341,32 @@ const ChatPage = () => {
         }}
         searchQuery={searchQuery}
         onSearchChange={handleSearch}
+        isAcademic={isAdmin}
       />
+          
       <div className="chat-section">
         {selectedGroup && selectedGroup.id === 'intellica_group' && (
           <div className="seminar-banner">
             <h3>İntellica Seminer Grubu</h3>
             {isAdmin && (
-              <button className="start-seminar-button" onClick={handleStartSeminar}>
+              <button 
+                className="start-seminar-button" 
+                onClick={handleStartSeminar}
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+              >
                 Görüntülü Seminer Başlat
               </button>
             )}
-            <button className="join-seminar-button" onClick={handleStartSeminar}>
+            <button 
+              className="join-seminar-button" 
+              onClick={handleJoinSeminar}
+              style={{ WebkitTapHighlightColor: 'transparent' }}
+            >
               Görüntülü Seminere Katıl
             </button>
           </div>
         )}
-        
+                      
         {(selectedUser || selectedGroup) ? (
           <>
             <MessageWindow
@@ -301,6 +383,7 @@ const ChatPage = () => {
               onTyping={handleTyping}
               isGroup={!!selectedGroup}
               groupId={selectedGroup?.id}
+              isMobile={isMobile}
             />
           </>
         ) : (
@@ -312,4 +395,3 @@ const ChatPage = () => {
 };
 
 export default ChatPage;
-

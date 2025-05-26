@@ -4,10 +4,21 @@ import {
   signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  confirmPasswordReset,
+  applyActionCode
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';  // src/firebase.js dosyasını import et
+import {
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  query,
+  where,
+  collection,
+  getDocs
+} from 'firebase/firestore';
+import { auth, db } from '../firebase';
 
 const AuthContext = createContext();
 
@@ -16,10 +27,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Firebase ile oturum dinleme
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Kullanıcı oturum açtıysa, Firestore'dan ek bilgileri al
         try {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           if (userDoc.exists()) {
@@ -39,120 +48,171 @@ export const AuthProvider = ({ children }) => {
       }
       setLoading(false);
     });
-    
-    // Cleanup
+
     return () => unsubscribe();
   }, []);
 
-  // Giriş fonksiyonu - userType parametresi eklendi
   const login = async (email, password, userType) => {
     try {
-      // Firebase Authentication ile giriş yap
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // Firestore'dan kullanıcı bilgilerini al
       const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-      
+
       if (!userDoc.exists()) {
-        await signOut(auth); // Kullanıcı bilgileri yoksa çıkış yaptır
-        return { 
-          success: false, 
-          message: "Kullanıcı bilgileri bulunamadı." 
-        };
+        await signOut(auth);
+        return { success: false, message: "Kullanıcı bilgileri bulunamadı." };
       }
-      
+
       const userData = userDoc.data();
-      
-      // Kullanıcı tipi kontrolü
+
       if (userType && userData.userType !== userType) {
-        // Yanlış kullanıcı tipi ile giriş yapılmaya çalışılıyor
-        await signOut(auth); // Kullanıcıyı çıkış yaptır
-        return { 
-          success: false, 
-          message: `Bu hesap bir ${userType === 'student' ? 'öğrenci' : 'akademisyen'} hesabı değil. Lütfen doğru kullanıcı tipini seçin.` 
+        await signOut(auth);
+        return {
+          success: false,
+          message: `Bu hesap bir ${userType === 'student' ? 'öğrenci' : 'akademisyen'} hesabı değil. Lütfen doğru kullanıcı tipini seçin.`
         };
       }
-      
+
       return { success: true, userData };
     } catch (error) {
       let message = "Giriş sırasında bir hata oluştu.";
-      
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        message = "Email veya şifre hatalı.";
-      } else if (error.code === 'auth/invalid-email') {
-        message = "Geçersiz email adresi.";
-      } else if (error.code === 'auth/user-disabled') {
-        message = "Bu hesap devre dışı bırakılmış.";
-      } else if (error.code === 'auth/too-many-requests') {
-        message = "Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.";
+
+      switch (error.code) {
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+          message = "Email veya şifre hatalı.";
+          break;
+        case 'auth/invalid-email':
+          message = "Geçersiz email adresi.";
+          break;
+        case 'auth/user-disabled':
+          message = "Bu hesap devre dışı bırakılmış.";
+          break;
+        case 'auth/too-many-requests':
+          message = "Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.";
+          break;
+        default:
+          message = error.message;
       }
-      
-      return {
-        success: false,
-        message: message
-      };
+
+      return { success: false, message };
     }
   };
 
-  // Kayıt fonksiyonu - userType ve diğer alanlar eklendi
   const register = async (email, password, userData) => {
     try {
-      // Firebase Authentication ile kullanıcı oluştur
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
-      // Kullanıcı bilgilerini Firestore'a kaydet
-      await setDoc(doc(db, "users", userCredential.user.uid), {
+
+      const userDocData = {
         firstName: userData.firstName,
         lastName: userData.lastName,
-        email: email,
+        email,
         userType: userData.userType,
         studentId: userData.userType === 'student' ? userData.studentId : null,
         academicTitle: userData.userType === 'academic' ? userData.academicTitle : null,
         department: userData.department,
         institution: userData.institution,
-        createdAt: new Date()
-      });
-      
+        createdAt: new Date(),
+        isEmailVerified: false,
+        lastLogin: null,
+        status: 'active'
+      };
+
+      await setDoc(doc(db, "users", userCredential.user.uid), userDocData);
+
       return { success: true };
     } catch (error) {
       let message = "Kayıt sırasında bir hata oluştu.";
-      
-      if (error.code === 'auth/email-already-in-use') {
-        message = "Bu email adresi zaten kullanılıyor.";
-      } else if (error.code === 'auth/invalid-email') {
-        message = "Geçersiz email adresi.";
-      } else if (error.code === 'auth/weak-password') {
-        message = "Şifre çok zayıf.";
-      }
-      
-      return {
-        success: false,
-        message: message
-      };
-    }
-  };
 
-  // Şifre sıfırlama fonksiyonu
-  const resetPassword = async (email) => {
-    try {
-      await sendPasswordResetEmail(auth, email);
-      return { success: true };
-    } catch (error) {
-      let message = "Şifre sıfırlama sırasında bir hata oluştu.";
-      
-      if (error.code === 'auth/user-not-found') {
-        message = "Bu email adresiyle kayıtlı bir kullanıcı bulunamadı.";
-      } else if (error.code === 'auth/invalid-email') {
-        message = "Geçersiz email adresi.";
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          message = "Bu email adresi zaten kullanılıyor.";
+          break;
+        case 'auth/invalid-email':
+          message = "Geçersiz email adresi.";
+          break;
+        case 'auth/weak-password':
+          message = "Şifre çok zayıf. En az 6 karakter kullanın.";
+          break;
+        default:
+          message = error.message;
       }
-      
+
       return { success: false, message };
     }
   };
 
-  // Çıkış fonksiyonu
+  const resetPassword = {
+    sendVerificationCode: async (email) => {
+      try {
+        const q = query(collection(db, "users"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+          throw new Error("Bu email adresiyle kayıtlı bir kullanıcı bulunamadı.");
+        }
+
+        await sendPasswordResetEmail(auth, email, {
+          url: `${window.location.origin}/reset-password`,
+          handleCodeInApp: true
+        });
+
+        return { success: true };
+      } catch (error) {
+        let message = "Şifre sıfırlama kodu gönderilemedi.";
+
+        switch (error.code) {
+          case 'auth/invalid-email':
+            message = "Geçersiz email adresi.";
+            break;
+          case 'auth/user-not-found':
+            message = "Bu email adresiyle kayıtlı bir kullanıcı bulunamadı.";
+            break;
+          default:
+            message = error.message;
+        }
+
+        throw new Error(message);
+      }
+    },
+
+    verifyCode: async (code) => {
+      try {
+        await applyActionCode(auth, code);
+        return true;
+      } catch {
+        throw new Error("Geçersiz veya süresi dolmuş doğrulama kodu.");
+      }
+    },
+
+    updatePassword: async (code, newPassword) => {
+      try {
+        if (newPassword.length < 6) {
+          throw new Error("Şifre en az 6 karakter olmalıdır.");
+        }
+
+        await confirmPasswordReset(auth, code, newPassword);
+
+        const user = auth.currentUser;
+        if (user) {
+          await updateDoc(doc(db, "users", user.uid), {
+            lastPasswordChange: new Date()
+          });
+        }
+
+        return { success: true };
+      } catch (error) {
+        throw new Error("Şifre güncellenemedi: " + error.message);
+      }
+    }
+  };
+
   const logout = async () => {
     try {
+      if (currentUser) {
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          lastLogout: new Date()
+        });
+      }
+
       await signOut(auth);
       return { success: true };
     } catch (error) {

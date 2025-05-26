@@ -5,11 +5,16 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  position: relative;
+  z-index: 10;
+  margin-top: 120px; /* Header yüksekliğine göre ayarlayın */
 }
 
 .tabs {
   display: flex;
   border-bottom: 1px solid #eaeaea;
+  position: relative;
+  z-index: 11;
 }
 
 .tab {
@@ -34,6 +39,8 @@
 
 .tab-content {
   padding: 30px;
+  position: relative;
+  z-index: 11;
 }
 
 .form-group {
@@ -153,7 +160,7 @@
   background-color: #fff;
   padding: 12px 20px;
   border: 1px solid #ddd;
-    border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
   font-size: 20px;
   font-weight: bold;
   letter-spacing: 2px;
@@ -185,6 +192,7 @@
 @media (max-width: 600px) {
   .seminar-controls {
     margin: 20px 10px;
+    margin-top: 100px; /* Mobilde header yüksekliğine göre ayarlayın */
     border-radius: 4px;
   }
   

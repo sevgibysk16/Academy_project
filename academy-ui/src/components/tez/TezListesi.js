@@ -4,6 +4,7 @@ import { collection, query, orderBy, limit, startAfter, getDocs, where } from 'f
 import { db } from '../../firebase';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/tezlistesi.css';
+import ChatBot from '../../components/ChatBot';
 
 const TezListesi = () => {
   const [tezler, setTezler] = useState([]);
@@ -257,6 +258,7 @@ const TezListesi = () => {
           )}
         </div>
       )}
+       <ChatBot />
     </div>
   );
 };

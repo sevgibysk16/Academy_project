@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="footer-column">
             <h3>Intellica</h3>
             <p className="footer-description">
-            Gerçek zamanlı mesajlaşma ve görüntülü seminerlerle akademik dünyada bir adım öne geçin! Uzmanlarla etkileşim kurun, bilgi paylaşın ve öğrenme deneyiminizi güçlendirin.
+              Gerçek zamanlı mesajlaşma ve görüntülü seminerlerle akademik dünyada bir adım öne geçin! Uzmanlarla etkileşim kurun, bilgi paylaşın ve öğrenme deneyiminizi güçlendirin.
             </p>
             <div className="social-links">
               <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
@@ -27,20 +27,11 @@ const Footer = () => {
             <h4>Hızlı Bağlantılar</h4>
             <ul className="footer-links">
               <li><a href="/">Ana Sayfa</a></li>
-              <li><a href="/courses">Topluluk</a></li>
-              <li><a href="/about">Hakkımızda</a></li>
-              <li><a href="/contact">İletişim</a></li>
-            </ul>
-          </div>
-          
-          <div className="footer-column">
-            <h4>Kategoriler</h4>
-            <ul className="footer-links">
-              <li><a href="/category/programming">Programlama</a></li>
-              <li><a href="/category/design">Tasarım</a></li>
-              <li><a href="/category/business">İşletme</a></li>
-              <li><a href="/category/marketing">Pazarlama</a></li>
-              <li><a href="/category/personal-development">Kişisel Gelişim</a></li>
+              <li><a href="/community">Topluluk</a></li>
+              <li><a href="/tezler">Tez Sunumları</a></li>
+              <li><a href="/transcripts">Seminer Sonuçları</a></li>
+              <li><a href="/blog">Blog</a></li>
+              <li><a href="/projects">Projeler</a></li>
             </ul>
           </div>
           
@@ -53,7 +44,7 @@ const Footer = () => {
               </li>
               <li>
                 <i className="fas fa-envelope"></i>
-                <span>info@intellica .com</span>
+                <span>info@intellica.com</span>
               </li>
             </ul>
             <div className="newsletter">
@@ -70,7 +61,7 @@ const Footer = () => {
         
         <div className="footer-bottom">
           <div className="copyright">
-            <p>&copy; {currentYear} Intellica . Tüm hakları saklıdır.</p>
+            <p>&copy; {currentYear} Intellica. Tüm hakları saklıdır.</p>
           </div>
           <div className="footer-bottom-links">
             <a href="/terms">Kullanım Şartları</a>

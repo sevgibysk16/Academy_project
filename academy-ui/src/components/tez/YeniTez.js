@@ -16,25 +16,22 @@ const YeniTez = () => {
   const [yukleniyor, setYukleniyor] = useState(false);
   const [error, setError] = useState(null);
   const [transkriptDurumu, setTranskriptDurumu] = useState('otomatik'); // 'otomatik' veya 'manuel'
-  const [yetkiHatasi, setYetkiHatasi] = useState(false);
   
   const navigate = useNavigate();
   const { currentUser, userDetails } = useAuth();
 
   useEffect(() => {
-    // Kullanıcı giriş yapmamışsa veya akademisyen değilse erişimi engelle
+    // Kullanıcı giriş yapmamışsa erişimi engelle
     if (!currentUser) {
-      setYetkiHatasi(true);
+      navigate('/login');
       return;
     }
     
-    if (userDetails && userDetails.userType !== 'academic') {
-      setYetkiHatasi(true);
-    } else if (userDetails && userDetails.userType === 'academic') {
-      // Akademisyen adını otomatik doldur
+    // Kullanıcı adını otomatik doldur
+    if (userDetails) {
       setAkademisyenAdi(userDetails.displayName || currentUser.email.split('@')[0]);
     }
-  }, [currentUser, userDetails]);
+  }, [currentUser, userDetails, navigate]);
 
   const validateYouTubeUrl = (url) => {
     const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})(\&.*)?$/;
@@ -58,9 +55,8 @@ const YeniTez = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Akademisyen kontrolü
-    if (!currentUser || userDetails?.userType !== 'academic') {
-      setError('Sadece akademisyenler tez ekleyebilir.');
+    if (!currentUser) {
+      setError('Lütfen önce giriş yapın.');
       return;
     }
     
@@ -84,7 +80,6 @@ const YeniTez = () => {
     try {
       setYukleniyor(true);
       setError(null);
-
       // Firestore'a tez bilgilerini kaydet
       const tezData = {
         baslik,
@@ -98,7 +93,7 @@ const YeniTez = () => {
         yukleyenId: currentUser.uid,
         yukleyenEmail: currentUser.email,
         yukleyenAdi: userDetails?.displayName || currentUser.email.split('@')[0],
-        yukleyenTipi: 'academic', // Veritabanı yapısına uygun olarak 'academic' olarak değiştirildi
+        yukleyenTipi: userDetails?.userType || 'user',
         yuklemeTarihi: serverTimestamp(),
         goruntulemeSayisi: 0,
         yorumlar: []
@@ -146,25 +141,6 @@ const YeniTez = () => {
       });
     }
   };
-
-  // Eğer kullanıcı akademisyen değilse erişim engellendi mesajı göster
-  if (yetkiHatasi) {
-    return (
-      <div className="yetki-hatasi-container">
-        <div className="yetki-hatasi-mesaj">
-          <i className="fas fa-exclamation-triangle"></i>
-          <h2>Erişim Engellendi</h2>
-          <p>Sadece akademisyenler tez ekleyebilir.</p>
-          <button 
-            onClick={() => navigate('/tezler')}
-            className="geri-don-btn"
-          >
-            Tez Listesine Dön
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="yeni-tez-container">

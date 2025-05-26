@@ -17,9 +17,20 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import TezListesi from './components/tez/TezListesi';
 import TezDetay from './components/tez/TezDetay';
 import YeniTez from './components/tez/YeniTez';
+import TranscriptsPage from './pages/TranscriptsPage';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+import CreateBlogPost from './components/CreateBlogPost';
+import ForgotPassword from './components/Auth/ForgotPassword';
+import ResetPassword from './components/Auth/ResetPassword';
+import BackButton from './components/BackButton';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectPage from './pages/ProjectPage';
 import './styles/tezlistesi.css';
 import './styles/tezdetay.css';
 import './styles/yenitez.css';
+import './styles/Blog.css';
+import './styles/CreateBlogPost.css';
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser, loading } = useAuth();
@@ -44,6 +55,37 @@ const AcademicRoute = ({ children }) => {
   return children;
 };
 
+const BlogRoute = () => {
+  return (
+    <ProtectedRoute>
+      <Blog />
+    </ProtectedRoute>
+  );
+};
+
+const BlogPostRoute = () => {
+  return (
+    <ProtectedRoute>
+      <BlogPost />
+    </ProtectedRoute>
+  );
+};
+
+// Geri tuşunun görünürlüğünü kontrol eden bileşen
+const BackButtonWrapper = () => {
+  const location = useLocation();
+  const { currentUser } = useAuth();
+  
+  // Ana sayfa ve giriş/kayıt sayfalarında geri tuşunu gösterme
+  const hideBackButton = ['/', '/login', '/register'].includes(location.pathname);
+  
+  if (hideBackButton || !currentUser) {
+    return null;
+  }
+  
+  return <BackButton />;
+};
+
 function AppContent() {
   const { currentUser, loading, logout } = useAuth();
   const isLoggedIn = !!currentUser;
@@ -54,7 +96,7 @@ function AppContent() {
     currentUser.userType === 'academic' ||
     currentUser.isAcademic === true : false;
   
-  const hideFooterRoutes = ['/community', '/chat', '/tez/','/dashboard','/tezler','/edit-profile', '/seminar'];
+  const hideFooterRoutes = ['/community', '/chat', '/tez/','/dashboard','/tezler','/edit-profile', '/seminar', '/transcripts', '/yeni-tez', '/blog','/login','/register', '/projects', '/project'];
   const shouldShowFooter = !hideFooterRoutes.some((route) => location.pathname.startsWith(route));
   
   return (
@@ -62,6 +104,7 @@ function AppContent() {
       <Navbar isLoggedIn={isLoggedIn} onLogout={logout} currentUser={currentUser} />
       <main className="main-content">
         <div className="content-container">
+          <BackButtonWrapper />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
@@ -71,6 +114,29 @@ function AppContent() {
             <Route path="/activities" element={<ProtectedRoute><Activities /></ProtectedRoute>} />
             <Route path="/community" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+            <Route path="/forgot-password" element={isLoggedIn ? <Navigate to="/" /> : <ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            
+            {/* Blog rotaları */}
+            <Route path="/blog/create" element={
+              <AcademicRoute>
+                <CreateBlogPost />
+              </AcademicRoute>
+            } />
+            <Route path="/blog/:postId" element={<BlogPostRoute />} />
+            <Route path="/blog" element={<BlogRoute />} />
+            
+            {/* Proje rotaları */}
+            <Route path="/projects" element={
+              <ProtectedRoute>
+                <ProjectsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/project/:id" element={
+              <ProtectedRoute>
+                <ProjectPage />
+              </ProtectedRoute>
+            } />
             
             {/* Seminar rotaları */}
             <Route 
@@ -120,6 +186,14 @@ function AppContent() {
                 <YeniTez />
               </AcademicRoute>
             } />
+            
+            {/* Transkript sayfası */}
+            <Route path="/transcripts" element={
+              <ProtectedRoute>
+                <TranscriptsPage />
+              </ProtectedRoute>
+            } />
+            
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>

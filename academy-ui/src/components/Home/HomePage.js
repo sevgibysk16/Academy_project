@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; // 🔥 Eklendi
 import './HomePage.css';
 import heroImage from '../../assets/hero-image.jpg';
+import ChatBot from '../../components/ChatBot'; // ✅ ChatBot eklendi
+
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -125,13 +127,15 @@ const HomePage = () => {
           <div className="cta-content">
             <h2>Intellica'ya Bugün Katılın</h2>
             <p>Bilgi paylaşımını ve akademik işbirliğini kolaylaştıran platformumuzda yerinizi alın.</p>
-            {/* 🔥 Burada da sadece giriş yapmamışsa "Hemen Kaydol" butonu gösterilebilir */}
             {!currentUser && (
               <button className="cta-button" onClick={navigateToRegister}>Hemen Kaydol</button>
             )}
           </div>
         </div>
       </section>
+
+      {/* ✅ ChatBot bileşeni en sona eklendi */}
+      <ChatBot />
     </div>
   );
 };
